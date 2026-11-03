@@ -1,0 +1,18 @@
+import { cloudflareTest } from "@cloudflare/vitest-pool-workers";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  plugins: [
+    cloudflareTest({
+      miniflare: {
+        compatibilityFlags: ["nodejs_compat"],
+        compatibilityDate: "2025-01-01",
+        d1Databases: ["DB"],
+      },
+    }),
+  ],
+  test: {
+    include: ["tests/**/*.test.ts"],
+    setupFiles: ["./tests/setup.ts"],
+  },
+});
