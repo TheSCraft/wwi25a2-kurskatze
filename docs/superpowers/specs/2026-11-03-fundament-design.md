@@ -28,8 +28,7 @@ components/cat/
   CatStage  ActionPanel  RevivalPanel  StatusCard  ScoreCard
   Leaderboard  StickerBox  AccountDialog  Bowl
 hooks/
-  use-cat.ts               Polling, Session-Header, Revision-Zähler, send()
-  use-clock.ts             Server-Zeit-Offset und Sekundentakt
+  use-cat.ts               Polling, Uhr (Server-Zeit-Offset), Session-Header, Revision-Zähler, send()
   use-reaction.ts          Sprechblase und Pose mit 3,5-s-Timer
 lib/
   cat-rules.ts             bleibt
@@ -50,8 +49,8 @@ bleiben unverändert.
 - Vitest mit `@cloudflare/vitest-pool-workers`: Tests laufen im Worker-Laufzeitmodell
   mit frischer lokaler D1. Die Migrationen aus `drizzle/` werden vor jedem Test
   eingespielt.
-- Die Server-Module werden direkt aufgerufen, die Route zusätzlich mit echten
-  `Request`-Objekten. Die Zeit ist kontrollierbar.
+- Alle Tests laufen über die Route mit echten `Request`-Objekten, sodass sie den
+  Umbau unverändert überstehen. Die Zeit ist kontrollierbar.
 - Abgedeckt: Aktionen (Punkte, Cooldown, gemeinsame Pause, Lebensfrist, Deckel bei
   Zuneigung), Tod, Wiederbelebung (Teilnehmerkreis, Doppelportion, letzte Portion,
   Neuregistrierung während der Runde), Konto (Registrieren, Login, falsches Passwort,
