@@ -31,10 +31,15 @@ export function post(body: object, session?: string, headers: Record<string, str
 
 export async function register(name: string, password = "geheim1234") {
   const res = await post({ action: "register", name, password });
-  const body = (await res.json()) as any;
+  const body = (await json(res));
   return { res, body, session: body.session as string };
 }
 
 export function act(session: string, action: string) {
   return post({ action }, session);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function json(res: Response): Promise<any> {
+  return res.json();
 }

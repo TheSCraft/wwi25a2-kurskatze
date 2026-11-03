@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { T0, get, post, register, setTime } from "./helpers";
+import { T0, get, post, json, register, setTime } from "./helpers";
 
 const LIFETIME = 72 * 60 * 60 * 1000;
 
@@ -9,18 +9,18 @@ async function deadWith(...names: string[]) {
   for (const name of names) sessions.push((await register(name)).session);
   await get(sessions[0]);
   setTime(T0 + LIFETIME); // länger als die Startfrist, Byte ist tot
-  const state = (await (await get(sessions[0])).json()) as any;
+  const state = (await json(await get(sessions[0])));
   return { sessions, round: state.foodExpires as number };
 }
 
 test("alle Konten füttern, dann lebt Byte wieder", async () => {
   const { sessions, round } = await deadWith("Lisa", "Tom");
-  const first = (await (await post({ action: "revive", round }, sessions[0])).json()) as any;
+  const first = (await json(await post({ action: "revive", round }, sessions[0])));
   expect(first.revival).toMatchObject({ total: 2, fed: 1, contributed: 1 });
   expect(first.food).toBe(0);
   const second = await post({ action: "revive", round }, sessions[1]);
   expect(second.status).toBe(200);
-  const body = (await second.json()) as any;
+  const body = (await json(second));
   expect(body.food).toBe(100);
 });
 
@@ -37,7 +37,7 @@ test("wer sich erst nach dem Verhungern registriert, gehört nicht zur Runde", a
   const res = await post({ action: "revive", round }, late.session);
   expect(res.status).toBe(409);
   await post({ action: "revive", round }, sessions[0]);
-  const last = (await (await post({ action: "revive", round }, sessions[1])).json()) as any;
+  const last = (await json(await post({ action: "revive", round }, sessions[1])));
   expect(last.food).toBe(100);
 });
 
