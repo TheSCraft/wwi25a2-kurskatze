@@ -30,12 +30,14 @@ export default function Page(){
   setDialogName(data?.me?.name||localStorage.getItem("byte-name")||"");
   setDialogKey(k=>k+1);setFormError("");setModal(true);
  }
+ /** Neuer key beim Schließen: das Dialog-Passwort wird verworfen, bei Fehlern bleibt der Dialog offen. */
+ function closeDialog(){setDialogKey(k=>k+1);setModal(false)}
  async function run(action:string,fields:Record<string,string|number>={}){
   setFormError("");
   try{
    const result=await send(action,fields);
    if(!result)return;
-   if(["register","login","logout","rename"].includes(action))setModal(false);
+   if(["register","login","logout","rename"].includes(action))closeDialog();
    else if(action==="revive")say(result.food>0?"Miau! Ich bin wieder da!":"","");
    else{if(action==="meow"&&audio)playMeow();say(pick(phrases[action as keyof typeof phrases]),action)}
   }catch(e){
@@ -61,4 +63,4 @@ export default function Page(){
 {tab==="Rangliste"&&<Leaderboard data={data} onRoom={()=>navigate("Katzenzimmer")}/>}
 {tab!=="Rangliste"&&<StickerBox tab={tab} onAll={()=>navigate("Stickerbox")}/>}
 <footer><span>Miau Campus · WWI25A2</span><span>Mit Pfoten programmiert.</span></footer></main>
-<AccountDialog key={dialogKey} open={modal} initialMode={dialogMode} initialName={dialogName} busy={busy} error={formError} onClose={()=>setModal(false)} onSwitchMode={()=>setFormError("")} onSubmit={run}/></>}
+<AccountDialog key={dialogKey} open={modal} initialMode={dialogMode} initialName={dialogName} busy={busy} error={formError} onClose={closeDialog} onSwitchMode={()=>setFormError("")} onSubmit={run}/></>}

@@ -37,9 +37,15 @@ lib/
     db.ts  auth.ts  state.ts  initialize.ts
     actions/  account.ts  revive.ts  interact.ts
 styles/
-  base.css  header.css  stage.css  cards.css  dialog.css  stickers.css
+  base.css  header.css  stage.css  cards.css  stickers.css  dialog.css
+  animations.css  responsive.css  additions.css
 app/globals.css            importiert die Teildateien
 ```
+
+Es sind neun statt sechs CSS-Dateien (Import-Reihenfolge wie in `app/globals.css`). Die drei
+zusätzlichen (`animations`, `responsive`, `additions`) gibt es, weil im Original `@keyframes`,
+`@media` und spätere Regeln verteilt dazwischenliegen und die Kaskadenreihenfolge erhalten
+bleiben muss.
 
 Variablen bekommen lesbare Namen. Texte, `phrases`, Klassennamen und Selektoren
 bleiben unverändert.

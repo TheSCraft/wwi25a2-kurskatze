@@ -2,8 +2,8 @@
 import {useCallback,useEffect,useRef,useState} from "react";
 import type {Data} from "../lib/cat-types";
 
-export const sessionKey="byte-session-v2";
-export function sessionHeaders():Record<string,string>{const session=localStorage.getItem(sessionKey);return session?{"X-Byte-Session":session}:{}}
+const sessionKey="byte-session-v2";
+function sessionHeaders():Record<string,string>{const session=localStorage.getItem(sessionKey);return session?{"X-Byte-Session":session}:{}}
 export class ApiError extends Error{constructor(message:string,readonly status:number){super(message)}}
 
 /** Zustand von Byte: Polling alle 8 s, Uhr im Sekundentakt mit Server-Zeit-Offset, Session-Header, Revision-Zähler gegen veraltete Antworten, send(). */

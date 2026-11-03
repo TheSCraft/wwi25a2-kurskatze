@@ -6,10 +6,11 @@ gefüttert, stirbt er. Danach muss jedes Kurskonto eine Portion füttern, damit 
 
 ## Starten
 
-Voraussetzung: Node `>=22.13.0`. Die Abhängigkeiten werden installiert (das Projekt führt eine
-`pnpm-lock.yaml`), danach:
+Voraussetzung: Node `>=22.13.0`. Das Projekt nutzt pnpm (`packageManager` in `package.json`,
+`pnpm-lock.yaml`). Abhängigkeiten mit `corepack pnpm install` (oder `pnpm install`) installieren,
+nicht mit `npm install`, das die Lockdatei ignoriert. Danach:
 
-    npm run dev
+    pnpm dev
 
 Der Dev-Server läuft auf `http://127.0.0.1:5173`. Die lokale Datenbank (Cloudflare D1 über
 Miniflare) liegt unter `.wrangler/state/v3/d1/miniflare-D1DatabaseObject/<hash>.sqlite`.
@@ -19,7 +20,7 @@ Miniflare) liegt unter `.wrangler/state/v3/d1/miniflare-D1DatabaseObject/<hash>.
 Der Dev-Server legt die Tabellen nicht selbst an. Solange die Migrationen fehlen, antwortet
 `GET /api/cat` mit 500 und `no such table: cat`. So werden sie eingespielt:
 
-1. `npm run dev` starten und einmal die Seite aufrufen. Erst dabei entsteht die `.sqlite`-Datei.
+1. `pnpm dev` starten und einmal die Seite aufrufen. Erst dabei entsteht die `.sqlite`-Datei.
 2. Die Migrationen aus `drizzle/` der Reihe nach in diese Datei schreiben (das `sqlite3`-CLI wird
    vorausgesetzt):
 
@@ -33,7 +34,7 @@ Löschen von `.wrangler/` setzt die lokale Datenbank zurück, dann ist dieser Sc
 
 ## Tests
 
-    npm test
+    pnpm test
 
 Vitest mit `@cloudflare/vitest-pool-workers`: Die Tests laufen in der Workers-Laufzeit mit einer
 frischen lokalen D1 und prüfen Konto, Aktionen, Cooldowns, Wiederbelebung und gleichzeitige
