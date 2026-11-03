@@ -15,6 +15,20 @@
       "when": 1793714686717,
       "tag": "0001_romantic_supernaut",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1793715084148,
+      "tag": "0002_smooth_nextwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1793715134479,
+      "tag": "0003_sturdy_gateway",
+      "breakpoints": true
     }
   ]
 }

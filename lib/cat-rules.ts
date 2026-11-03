@@ -1,4 +1,4 @@
-export const lifetime = 72 * 60 * 60 * 1000;
+export const foodLifetime = 72 * 60 * 60 * 1000;
 export const sharedPause = 5000;
 export const rules = {
   food: {points:5, seconds:180, food:12, love:0},

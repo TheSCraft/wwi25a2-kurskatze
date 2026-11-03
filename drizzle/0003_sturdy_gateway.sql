@@ -1,0 +1,1 @@
+ALTER TABLE `cat` ADD `food_expires` integer;
