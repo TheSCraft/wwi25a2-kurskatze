@@ -1,0 +1,124 @@
+/* Responsive @media-Blöcke (850px, 650px) und reduzierte Bewegung. */
+
+@media(max-width:850px) {
+  .brand span {
+    display:none
+  }
+  .bar,main {
+    padding-left:20px;
+    padding-right:20px
+  }
+  .columns {
+    grid-template-columns:1.65fr 1fr;
+    gap:15px
+  }
+  .card {
+    padding:16px
+  }
+  nav {
+    gap:1px
+  }
+  nav button {
+    padding:9px
+  }
+  .stage {
+    height:280px
+  }
+  .actionarea {
+    padding:16px
+  }
+  .actions {
+    gap:7px
+  }
+  .stickers {
+    gap:12px
+  }
+}
+
+@media(max-width:650px) {
+  .bar {
+    height:auto;
+    display:grid;
+    grid-template-columns:1fr auto;
+    padding-top:10px
+  }
+  .brand {
+    justify-self:start
+  }
+  .brand span {
+    display:inline
+  }
+  .profile {
+    max-width:120px
+  }
+  nav {
+    order:3;
+    grid-column:1/-1;
+    justify-content:space-between;
+    padding-bottom:8px
+  }
+  nav button {
+    font-size:12px
+  }
+  .columns {
+    display:flex;
+    flex-direction:column
+  }
+  .stage {
+    height:280px
+  }
+  .cat {
+    width:72%;
+    left:12%
+  }
+  main {
+    padding-top:25px
+  }
+  .sub {
+    font-size:14px
+  }
+  .actions button {
+    font-size:13px
+  }
+  .stickers {
+    grid-template-columns:1fr 1fr
+  }
+  .thumb {
+    height:128px
+  }
+  .score,.status {
+    padding:19px
+  }
+  .speech {
+    font-size:16px
+  }
+  .stinfo {
+    padding:9px
+  }
+  .stinfo strong {
+    font-size:14px
+  }
+  .stinfo svg {
+    width:15px
+  }
+  .paperlabel {
+    font-size:8px
+  }
+  .stagecaption {
+    font-size:7px
+  }
+  .sectiontop .link {
+    font-size:12px
+  }
+  .collection h2 {
+    font-size:29px
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*:before,*:after {
+    animation:none!important;
+    transition:none!important;
+    scroll-behavior:auto!important
+  }
+}

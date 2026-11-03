@@ -1,0 +1,67 @@
+/* Nachträgliche Regeln: Aktionsdetails, Wiederbelebung (.life, .memorial), .formlink, Katzen-Wiggle. */
+
+.actions small {
+  display:block;
+  font:600 10px monospace;
+  letter-spacing:0;
+  margin-top:3px
+}
+
+.actions button:disabled {
+  cursor:default
+}
+
+.play {
+  background:#b7dbbc
+}
+
+.brush {
+  background:#a9d7e3
+}
+
+.study {
+  background:#f4d789
+}
+
+.life {
+  border-top:1px dashed #aaa597;
+  margin-top:14px;
+  padding-top:12px
+}
+
+.life strong,.life b {
+  display:block;
+  font-size:13px
+}
+
+.life b {
+  font:800 22px monospace;
+  margin:5px 0
+}
+
+.life p {
+  font-size:12px;
+  line-height:1.5;
+  margin-top:5px
+}
+
+.memorial {
+  filter:grayscale(.9)
+}
+
+.formlink {
+  background:none;
+  border:0;
+  text-decoration:underline;
+  display:block;
+  margin:15px auto 0;
+  font-size:13px
+}
+
+.cat.play,.cat.study,.cat.brush {
+  animation:wiggle .6s 3
+}
+
+dialog input[readonly] {
+  font:600 13px monospace
+}

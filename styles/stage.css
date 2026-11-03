@@ -1,0 +1,232 @@
+/* Typografie, Spielbühne mit Katze, Sprechblase, Aktionsbereich und Raum-Rahmen. */
+
+small,.eyebrow,.tag,.paperlabel,.stagecaption,.thumb>span {
+  font:700 11px/1.4 ui-monospace,Consolas,monospace;
+  letter-spacing:1.15px
+}
+
+small,.eyebrow,.mood {
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+
+.eyebrow {
+  font-size:10px;
+  color:#514e48
+}
+
+.eyebrow i {
+  font-style:normal;
+  color:#a6a195;
+  margin:0 2px
+}
+
+.dot,.paperlabel b {
+  width:8px;
+  height:8px;
+  display:inline-block;
+  border-radius:50%;
+  background:#64ad81;
+  border:1px solid #314c38
+}
+
+h1,h2,p {
+  margin:0
+}
+
+h1,h2,.points,.stinfo strong {
+  font-family:ui-rounded,"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif;
+  font-weight:1000;
+  letter-spacing:-.055em
+}
+
+h1 {
+  font-size:clamp(44px,5vw,68px);
+  line-height:1.06;
+  margin:10px 0
+}
+
+em,.bytehead h2 span {
+  font-style:normal;
+  color:#e86e43
+}
+
+.sub {
+  color:#615d54;
+  font-size:16px;
+  line-height:1.5;
+  margin-bottom:27px
+}
+
+.columns {
+  display:grid;
+  grid-template-columns:minmax(0,1.98fr) minmax(0,1fr);
+  gap:23px
+}
+
+.room,.card,.stickers a,dialog {
+  border:2px solid #332e2a;
+  border-radius:17px;
+  background:#fffdf7;
+  box-shadow:4px 4px 0 #332e2a
+}
+
+.room {
+  overflow:hidden
+}
+
+.stage {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  height:304px;
+  background-color:#f7c4ae;
+  background-image:linear-gradient(#a9695630 1px,transparent 1px),linear-gradient(90deg,#a9695630 1px,transparent 1px);
+  background-size:25px 25px;
+  border-bottom:2px solid
+}
+
+.paperlabel,.speaker {
+  position:absolute;
+  top:17px;
+  z-index:4;
+  border:1.5px solid #342f2d;
+  background:#fffcf1;
+  box-shadow:2px 2px #503a35
+}
+
+.paperlabel {
+  left:18px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border-radius:5px;
+  padding:5px 8px;
+  font-size:9px;
+  transform:rotate(-2deg)
+}
+
+.speaker {
+  right:16px;
+  border-radius:50%;
+  width:32px;
+  height:32px
+}
+
+.sun {
+  position:absolute;
+  left:50%;
+  top:51%;
+  width:260px;
+  height:260px;
+  transform:translate(-50%,-50%);
+  background:#ffe4a8;
+  border-radius:50%
+}
+
+.cat {
+  position:absolute;
+  width:60%;
+  height:86%;
+  bottom:6%;
+  left:19%;
+  object-fit:contain;
+  filter:drop-shadow(0 3px 0 #79513d35)
+}
+
+.shadow {
+  position:absolute;
+  width:30%;
+  border-radius:50%;
+  height:17px;
+  background:#ae755a66;
+  left:34%;
+  bottom:8%
+}
+
+.bowl {
+  position:absolute;
+  width:11%;
+  right:20%;
+  bottom:7%;
+  transform:rotate(5deg)
+}
+
+.speech {
+  position:absolute;
+  z-index:3;
+  left:65%;
+  top:25%;
+  background:#fffcf2;
+  border:2px solid;
+  border-radius:48% 48% 48% 10%;
+  padding:8px 16px;
+  transform:rotate(7deg);
+  font:bold italic 21px Georgia;
+  max-width:32%
+}
+
+.stagecaption {
+  position:absolute;
+  bottom:12px;
+  left:15px;
+  font-size:8px;
+  letter-spacing:.9px;
+  color:#62483c
+}
+
+.tw,.cross {
+  position:absolute;
+  color:#8f593e
+}
+
+.t1 {
+  font-size:27px;
+  left:21%;
+  top:32%
+}
+
+.t2 {
+  font-size:34px;
+  right:12%;
+  bottom:24%
+}
+
+.t3 {
+  left:30%;
+  bottom:21%;
+  font-size:15px
+}
+
+.cross {
+  left:18%;
+  bottom:23%
+}
+
+.actionarea {
+  padding:18px 23px 21px
+}
+
+.bytehead {
+  display:flex;
+  align-items:center;
+  gap:13px
+}
+
+.bytehead h2 {
+  font-size:30px
+}
+
+.tag {
+  background:#f6ebd0;
+  transform:rotate(-3deg);
+  font-size:9px
+}
+
+.actionarea p,.board p,dialog p {
+  color:#655e55;
+  font-size:14px;
+  line-height:1.5;
+  margin:4px 0 14px
+}

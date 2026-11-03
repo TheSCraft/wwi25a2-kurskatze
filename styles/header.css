@@ -1,0 +1,81 @@
+/* Kopfzeile: header, .bar, .brand, Navigation, Profil und main. */
+
+header {
+  background:#fffdf6;
+  border-bottom:2px solid
+}
+
+.bar,main {
+  max-width:1190px;
+  margin:auto;
+  padding:0 38px
+}
+
+.bar {
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px
+}
+
+.brand,.profile,nav button,.link,.speaker,.close {
+  background:none;
+  border:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px
+}
+
+.brand {
+  padding:0;
+  font-size:23px;
+  font-weight:900;
+  letter-spacing:-1.4px
+}
+
+.brand img {
+  width:37px
+}
+
+.brand span,.tag {
+  font:700 10px monospace;
+  letter-spacing:.5px;
+  border:1.4px solid;
+  padding:4px 6px;
+  border-radius:5px;
+  background:#c9e8ce
+}
+
+.brand span {
+  transform:rotate(-4deg)
+}
+
+nav {
+  display:flex;
+  gap:8px
+}
+
+nav button,.profile {
+  font-size:14px;
+  font-weight:700;
+  padding:10px 14px;
+  border-radius:9px
+}
+
+.active {
+  background:#ffe4ad;
+  box-shadow:inset 0 0 0 1.4px #39302f
+}
+
+.profile {
+  background:white;
+  border:1.5px solid;
+  max-width:175px;
+  overflow:hidden
+}
+
+main {
+  padding-top:41px
+}

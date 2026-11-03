@@ -1,0 +1,39 @@
+/* Dialog mit Formularfeldern, Speichern- und Schliessen-Buttons. */
+
+dialog {
+  max-width:min(390px,90vw);
+  padding:28px
+}
+
+dialog::backdrop {
+  background:#29241e66
+}
+
+dialog h2 {
+  margin-bottom:5px
+}
+
+dialog label {
+  display:grid;
+  gap:8px;
+  font-weight:bold;
+  font-size:14px
+}
+
+dialog input {
+  width:100%;
+  border:1.5px solid;
+  border-radius:8px;
+  padding:12px
+}
+
+.save {
+  width:100%;
+  margin-top:17px
+}
+
+.close {
+  position:absolute;
+  right:10px;
+  top:10px
+}

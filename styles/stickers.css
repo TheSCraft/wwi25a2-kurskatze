@@ -1,0 +1,104 @@
+/* Sticker-Sammlung, Rangliste (.board) und Footer. */
+
+.stickers {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px
+}
+
+.stickers a {
+  overflow:hidden;
+  text-decoration:none;
+  box-shadow:3px 3px #332e2a
+}
+
+.thumb {
+  height:155px;
+  position:relative;
+  text-align:center;
+  border-bottom:1.5px solid
+}
+
+.thumb img {
+  width:85%;
+  height:90%;
+  margin-top:4%;
+  transition:transform .2s
+}
+
+.stickers a:hover img {
+  transform:rotate(-5deg) scale(1.05)
+}
+
+.thumb>span {
+  position:absolute;
+  top:9px;
+  left:10px;
+  font-size:8px
+}
+
+.c0 {
+  background:#f8df99
+}
+
+.c1 {
+  background:#cbded2
+}
+
+.c2 {
+  background:#d9d4ef
+}
+
+.c3 {
+  background:#f5cad0
+}
+
+.stinfo {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:13px
+}
+
+.stinfo strong {
+  letter-spacing:-.5px;
+  font-size:17px
+}
+
+.stinfo small {
+  font-size:8px;
+  margin-top:4px
+}
+
+.board {
+  max-width:800px
+}
+
+.board ol {
+  padding:0;
+  list-style:none
+}
+
+.board li {
+  display:flex;
+  gap:17px;
+  padding:14px 0;
+  border-bottom:1px dashed #aaa
+}
+
+.board li strong {
+  margin-left:auto
+}
+
+.board li b {
+  color:#827253
+}
+
+footer {
+  border-top:1px solid #ccc7b7;
+  padding:20px 0;
+  display:flex;
+  justify-content:space-between;
+  font:11px monospace;
+  margin-top:35px
+}

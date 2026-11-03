@@ -1,0 +1,37 @@
+/* Grundlagen: Reset, body, Buttons, Links, Eingaben und Fokus. */
+
+* {
+  box-sizing:border-box
+}
+
+body {
+  margin:0;
+  color:#312e2c;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#faf8f1;
+  background-image:radial-gradient(#9a8f781f .7px,transparent .8px);
+  background-size:6px 6px
+}
+
+button,a,input {
+  font:inherit;
+  color:inherit
+}
+
+button,a {
+  touch-action:manipulation
+}
+
+button {
+  cursor:pointer
+}
+
+button:disabled {
+  opacity:.65;
+  cursor:wait
+}
+
+button:focus-visible,a:focus-visible,input:focus-visible {
+  outline:3px solid #11665d;
+  outline-offset:3px
+}
