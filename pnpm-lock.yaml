@@ -84,6 +84,12 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      fflate:
+        specifier: 0.7.4
+        version: 0.7.4
+      sharp:
+        specifier: 0.35.4
+        version: 0.35.4(@types/node@22.19.19)
       '@cloudflare/vite-plugin':
         specifier: 1.37.1
         version: 1.37.1(@types/node@22.19.19)(vite@8.0.13(@types/node@22.19.19)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(tsx@4.22.1))(workerd@1.20260515.1)(wrangler@4.92.0(@cloudflare/workers-types@4.20260515.1)(@types/node@22.19.19))
