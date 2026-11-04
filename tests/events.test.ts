@@ -81,10 +81,11 @@ test("die letzte Portion schreibt revived", async () => {
   const { sessions, round } = await deadWith("Lisa", "Tom");
   await post({ action: "revive", round }, sessions[0]);
   const last = await json(await post({ action: "revive", round }, sessions[1]));
-  expect(types(last.events)).toEqual(["revived", "revive_portion", "revive_portion", "died", "joined", "joined"]);
-  expect(last.events[0]).toMatchObject({ type: "revived", at: T0 + LIFETIME, name: null });
-  expect(last.events[1].name).toBe("Tom");
-  expect(last.events[2].name).toBe("Lisa");
+  expect(types(last.events)).toEqual(["goal", "revived", "revive_portion", "revive_portion", "died", "joined", "joined"]);
+  expect(last.events[0]).toMatchObject({ type: "goal", detail: "revivals-1" }); // Kursziel, gleicher Zeitpunkt wie revived
+  expect(last.events[1]).toMatchObject({ type: "revived", at: T0 + LIFETIME, name: null });
+  expect(last.events[2].name).toBe("Tom");
+  expect(last.events[3].name).toBe("Lisa");
 });
 
 test("wer nicht zur Runde gehört, schreibt keinen revive_portion", async () => {
@@ -114,8 +115,8 @@ test("died wird auch geschrieben, wenn die erste Anfrage nach dem Tod die letzte
   const round = (await json(await get(session))).foodExpires as number;
   setTime(T0 + LIFETIME); // kein GET dazwischen
   const body = await json(await post({ action: "revive", round }, session));
-  expect(types(body.events)).toEqual(["revived", "revive_portion", "died", "joined"]);
-  expect(body.events[2].at).toBe(round);
+  expect(types(body.events)).toEqual(["goal", "revived", "revive_portion", "died", "joined"]);
+  expect(body.events[3].at).toBe(round);
 });
 
 test("Reihenfolge neueste zuerst, höchstens 10 Einträge", async () => {
