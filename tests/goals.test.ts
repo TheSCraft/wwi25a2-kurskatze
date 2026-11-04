@@ -43,3 +43,12 @@ test("nextGoal: nächstes offenes Ziel je Messgröße", () => {
   expect(nextGoal("revivals", ["revivals-1", "revivals-3"])).toBeUndefined();
   expect(nextGoal("points", ["points-500"])?.target).toBe(2500);
 });
+
+test("goals: je Messgröße aufsteigend nach Schwelle und ohne Duplikate (nextGoal verlässt sich darauf)", () => {
+  for (const kind of ["calls", "actions", "points", "revivals"] as const) {
+    const targets = goals.filter((g) => g.kind === kind).map((g) => g.target);
+    expect(targets.length).toBeGreaterThan(0);
+    expect(targets).toEqual([...targets].sort((a, b) => a - b));
+    expect(new Set(targets).size).toBe(targets.length);
+  }
+});

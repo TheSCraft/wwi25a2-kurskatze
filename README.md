@@ -24,13 +24,13 @@ Der Dev-Server legt die Tabellen nicht selbst an. Solange die Migrationen fehlen
 2. Die Migrationen aus `drizzle/` der Reihe nach in diese Datei schreiben (das `sqlite3`-CLI wird
    vorausgesetzt):
 
-       for f in drizzle/000*.sql; do
+       for f in drizzle/*.sql; do
          sed 's/--> statement-breakpoint//' "$f" | sqlite3 .wrangler/state/v3/d1/miniflare-D1DatabaseObject/<hash>.sqlite
        done
 
    `<hash>` ist der Dateiname der vorhandenen `.sqlite`-Datei (nicht `metadata.sqlite`).
 
-Die Schleife über alle `drizzle/000*.sql` gilt nur für eine **leere** Datenbank. Bei einer
+Die Schleife über alle `drizzle/*.sql` gilt nur für eine **leere** Datenbank (die Dateien müssen in Namensreihenfolge laufen; das Muster `000*` würde Migration 0010 und spätere auslassen). Bei einer
 **bestehenden** lokalen Datenbank wird nach einem Update nur die neue Migration eingespielt, zum
 Beispiel:
 
@@ -46,7 +46,7 @@ Hostings müssen die Migrationen `0000` bis `0006` der Reihe nach laufen.
 Mit den Kurszielen kommen zwei weitere Migrationen, `drizzle/0007_hard_manta.sql` und
 `drizzle/0008_backfill_actions_counter.sql`. Auf eine **bestehende** lokale Datenbank werden sie
 wie die vorherigen einzeln und **der Reihe nach** eingespielt. `0008` füllt den neuen Zähler
-`cat.actions` aus dem Protokoll. Ohne sie antwortet `GET /api/cat` mit 500 und
+`cat.actions` aus dem Protokoll. `cat.calls` zählt auch Miau-Aktionen aus der Zeit vor dem Protokoll, `cat.actions` wird nur aus dem Protokoll (Migration 0006) aufgefüllt; auf einer alten Datenbank kann die Zahl der Aktionen deshalb unter der der Miau-Aktionen liegen. Ohne sie antwortet `GET /api/cat` mit 500 und
 `no such table: goals_reached` bzw. `no such column`. Beim späteren Einrichten eines Hostings
 müssen die Migrationen `0000` bis `0008` der Reihe nach laufen.
 

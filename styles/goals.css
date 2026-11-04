@@ -20,6 +20,18 @@
   margin-top:6px
 }
 
+.goalbars .track i {
+  background:#ffbe77
+}
+
+.bytehead {
+  flex-wrap:wrap
+}
+
+.tag {
+  white-space:nowrap
+}
+
 .goals .badgecount {
   margin:14px 0 8px;
   color:#5a564d;
@@ -33,6 +45,7 @@
 }
 
 .badges li {
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -71,7 +84,7 @@
   position:absolute;
   inset:0;
   pointer-events:none;
-  background-image:radial-gradient(circle at 12% 22%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 78% 16%,#fff7c2 0 2px,transparent 2.5px),radial-gradient(circle at 88% 58%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 30% 70%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 60% 34%,#fff7c2 0 1px,transparent 1.5px);
+  background-image:radial-gradient(circle at 12% 22%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 78% 16%,#fff7c2 0 2px,transparent 2.5px),radial-gradient(circle at 88% 58%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 30% 70%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 60% 12%,#fff7c2 0 1px,transparent 1.5px);
   animation:fx-twinkle 3.2s ease-in-out infinite alternate
 }
 
