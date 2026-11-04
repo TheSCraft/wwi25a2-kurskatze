@@ -21,6 +21,8 @@ Hunger). Die Strafen setzen erst nach einer Schutzfrist ein.
 - Alle Zahlen sind Konstanten in der neuen Datei `lib/mood.ts`, nicht in
   `lib/cat-rules.ts` (TheSCrafts Datei bleibt unangetastet). Die Zahlen sollten trotzdem
   gemeinsam mit TheSCraft festgelegt werden, weil sie die Balance verändern.
+- Wiederbelebung setzt die Zuneigung auf mindestens 30 %, damit Byte nicht sofort wieder
+  schmollt; Konstante `reviveLove` in `lib/mood.ts`.
 - Den beschleunigten Hunger setzen wir um, aber über eine nachträgliche Abrechnung, nicht
   über einen Umbau der Todeslogik.
 
@@ -81,6 +83,12 @@ enden.
   Schreiben geändert, wird die Aktion abgelehnt (429 „Byte braucht noch einen Moment.“) und
   nichts geschrieben. `cat.love` ändert sich nur durch angenommene Aktionen (Abstand
   mindestens 5 Sekunden), das Fenster ist klein.
+
+## Wiederbelebung (`lib/server/actions/revive.ts`)
+
+Das `UPDATE cat` der abgeschlossenen Runde setzt zusätzlich `love=max(love,now+30*loveUnit)`
+(Parameter `now+reviveLove*loveUnit`): Die Zuneigung steigt auf mindestens 30 %, eine höhere
+wird nicht gesenkt. Eine unvollständige Runde ändert sie nicht.
 
 ## Beschleunigter Hunger (Abrechnung)
 

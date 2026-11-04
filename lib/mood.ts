@@ -2,6 +2,7 @@
 export const loveUnit = 360000; // gleich `unit` in lib/server/db.ts (ein Test prüft die Gleichheit)
 export const happyFrom = 70; // ab dieser Zuneigung (in %) gilt der Punkte-Bonus
 export const normalFrom = 30; // darunter ist Byte einsam
+export const reviveLove = 30; // Zuneigung (in %), auf die eine Wiederbelebung Byte mindestens bringt
 export const happyBonus = 1.25;
 export const sulkGrace = 2 * 60 * 60 * 1000; // Schutzfrist: so lange bei 0 %, bevor Byte schmollt
 export const hungerExtra = 0.5; // zusätzlicher Hunger (1,5-fach insgesamt) beim Schmollen

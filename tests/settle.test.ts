@@ -107,6 +107,7 @@ test("nach einer Wiederbelebung beginnt die Zählung neu", async () => {
   expect(round).toBe(now - 1000);
   expect((await post({ action: "revive", round }, session)).status).toBe(200);
   expect(await cat()).toMatchObject({ food_expires: now + foodLifetime, active: now });
+  await setCat("love=?", now - sulkGrace); // Wiederbelebung hebt die Zuneigung an; hier wieder auf 0 % seit der Schutzfrist
   setTime(now + 30_000);
   await get(session);
   expect(await cat()).toMatchObject({ food_expires: now + foodLifetime, settled: null });
