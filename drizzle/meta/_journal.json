@@ -50,6 +50,20 @@
       "when": 1793786217154,
       "tag": "0006_silly_whirlwind",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1793788448393,
+      "tag": "0007_hard_manta",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1793788455791,
+      "tag": "0008_backfill_actions_counter",
+      "breakpoints": true
     }
   ]
 }
