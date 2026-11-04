@@ -5,14 +5,14 @@ import {useCat,ApiError} from "../hooks/use-cat";
 import {useReaction} from "../hooks/use-reaction";
 import {useSound} from "../hooks/use-sound";
 import {isDead,type Tab} from "../lib/cat-types";
-import {playMeow} from "../lib/sound";
+import {prepareMeow,playMeow} from "../lib/meow-sound";
 import {CatStage} from "../components/cat/CatStage";
 import {ActionPanel} from "../components/cat/ActionPanel";
 import {RevivalPanel} from "../components/cat/RevivalPanel";
 import {StatusCard} from "../components/cat/StatusCard";
 import {ScoreCard} from "../components/cat/ScoreCard";
 import {Leaderboard} from "../components/cat/Leaderboard";
-import {StickerBox} from "../components/cat/StickerBox";
+import {Stickerbox} from "../components/stickerbox";
 import {AccountDialog,type DialogMode} from "../components/cat/AccountDialog";
 
 const phrases={play:["Den Laserpunkt krieg ich noch!"],brush:["Fell-Update installiert."],study:["Heute: lineare Mieugression."],food:["SELECT * FROM Thunfisch;","Nom nom. Prüfung bestanden!"],love:["Schnurr.exe läuft.","Mehr davon, bitte."],meow:["MIAU. War das klausurrelevant?","Miau zurück, letzte Reihe!"]};
@@ -38,6 +38,8 @@ export default function Page(){
  function closeDialog(){setDialogKey(k=>k+1);setModal(false)}
  async function run(action:string,fields:Record<string,string|number>={}){
   setFormError("");
+  // AudioContext noch im Klick-Handler fortsetzen, bevor auf den Server gewartet wird (Mobilbrowser).
+  if(action==="meow"&&audio)prepareMeow();
   try{
    const result=await send(action,fields);
    if(!result)return;
@@ -49,7 +51,8 @@ export default function Page(){
    (modal?setFormError:setError)(e instanceof Error?e.message:"Verbindung fehlgeschlagen.");
   }
  }
- function navigate(t:Tab){setTab(t);window.scrollTo({top:0,behavior:"smooth"})}
+ useEffect(()=>{function sync(){if(location.hash==="#stickerbox")setTab("Stickerbox");else if(location.hash==="#rangliste")setTab("Rangliste");else setTab("Katzenzimmer")}sync();window.addEventListener("hashchange",sync);return ()=>window.removeEventListener("hashchange",sync)},[]);
+ function navigate(t:Tab){setTab(t);location.hash=t==="Stickerbox"?"stickerbox":t==="Rangliste"?"rangliste":"katzenzimmer";window.scrollTo({top:0,behavior:"smooth"})}
 
  return <><header><div className="bar"><button className="brand" onClick={()=>navigate("Katzenzimmer")}><img src="/cat.svg" alt=""/>Miau Campus<span>WWI25A2</span></button><nav>{(["Katzenzimmer","Rangliste","Stickerbox"] as Tab[]).map((x,i)=>{const I=[House,Trophy,Sticker][i];return <button key={x} aria-current={tab===x?"page":undefined} className={tab===x?"active":""} onClick={()=>navigate(x)}><I size={16}/>{x}</button>})}</nav><button className="profile" onClick={()=>openDialog()}><UserRound size={16}/>{data?.account?data.me?.name:"Anmelden"}</button></div></header><main>
 <div className="eyebrow"><span className="dot"/> WWI25A2 <i>/</i> DIGITALER KURSMITBEWOHNER</div>
@@ -64,6 +67,6 @@ export default function Page(){
 <aside><StatusCard data={data} now={now}/>
 <ScoreCard points={data?.me?.points||0} onBoard={()=>navigate("Rangliste")}/></aside></div>:null}
 {tab==="Rangliste"&&<Leaderboard data={data} onRoom={()=>navigate("Katzenzimmer")}/>}
-{tab!=="Rangliste"&&<StickerBox tab={tab} onAll={()=>navigate("Stickerbox")}/>}
+{tab!=="Rangliste"&&<Stickerbox expanded={tab==="Stickerbox"} open={()=>navigate("Stickerbox")}/>}
 <footer><span>Miau Campus · WWI25A2</span><span>Mit Pfoten programmiert.</span></footer></main>
 <AccountDialog key={dialogKey} open={modal} initialMode={dialogMode} initialName={dialogName} busy={busy} error={formError} onClose={closeDialog} onSwitchMode={()=>setFormError("")} onSubmit={run}/></>}

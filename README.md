@@ -44,12 +44,14 @@ Anfragen. Sie brauchen den Dev-Server und die Schritte oben nicht.
 
 - `app/page.tsx`: Seite, setzt Hooks und Komponenten zusammen
 - `app/api/cat/route.ts`: Routing der API
-- `components/cat/`: UI-Bausteine (Bühne, Napf, Aktionen, Konto, Rangliste, Wiederbelebung, Sticker)
-- `hooks/use-cat.ts`, `hooks/use-reaction.ts`: Abruf, Uhr, Session und Reaktionen
+- `components/cat/`: UI-Bausteine (Bühne, Napf, Aktionen, Konto, Rangliste, Wiederbelebung)
+- `components/stickerbox.tsx`: Stickerbox (Katalog aus `public/stickerbox/katalog.json`, Suche, Themenpakete)
+- `hooks/use-cat.ts`, `hooks/use-reaction.ts`, `hooks/use-sound.ts`: Abruf, Uhr, Session, Reaktionen und Ton
 - `lib/server/`: Datenbank, Anmeldung, Zustand und Aktionen (`actions/`)
-- `lib/cat-rules.ts`: Punkte, Cooldowns, Wirkungen
+- `lib/cat-rules.ts`: Punkte, Cooldowns, Wirkungen, Teamgröße (`minimumTeamSize`, `actionGain`)
 - `lib/cat-types.ts`: gemeinsame Typen
-- `lib/sound.ts`: Töne
-- `styles/`: CSS, aufgeteilt in neun Dateien
+- `lib/meow-sound.ts`: Miau-Sound
+- `lib/sticker-*.ts`, `scripts/build-stickers.mjs`: Sticker-Motive, werden bei `dev`/`build` nach `public/stickerbox/` gerendert
+- `styles/`: CSS, aufgeteilt in zehn Dateien
 - `drizzle/`, `db/`: Migrationen und Schema
 - `tests/`: Vitest
