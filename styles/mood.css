@@ -1,0 +1,16 @@
+/* Stimmung von Byte nach Zuneigung (mood-<stufe> auf .stage). Gedenk-Look bleibt unberührt. */
+.stage.mood-happy:not(.memorial) .sun {
+  filter:brightness(1.05) saturate(1.15)
+}
+
+.stage.mood-lonely:not(.memorial) .speech {
+  opacity:.85
+}
+
+.stage.mood-sulking:not(.memorial) .cat {
+  filter:drop-shadow(0 3px 0 #79513d35) saturate(.65) brightness(.95)
+}
+
+.stage.mood-sulking.fx-glow:not(.memorial) .cat {
+  filter:drop-shadow(0 3px 0 #79513d35) drop-shadow(0 0 14px #ffd36bcc) saturate(.65) brightness(.95)
+}
