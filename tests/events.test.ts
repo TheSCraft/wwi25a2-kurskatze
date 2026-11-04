@@ -89,10 +89,32 @@ test("die letzte Portion schreibt revived", async () => {
 test("wer nicht zur Runde gehört, schreibt keinen revive_portion", async () => {
   const { sessions, round } = await deadWith("Lisa", "Tom");
   const late = await register("Nina"); // erst nach dem Verhungern registriert
+  await post({ action: "revive", round }, sessions[0]); // Positivkontrolle: Lisa zählt
   const res = await post({ action: "revive", round }, late.session);
   expect(res.status).toBe(409);
   const body = await json(await get(sessions[0]));
-  expect(types(body.events).filter((t) => t === "revive_portion")).toEqual([]);
+  const portions = body.events.filter((e: Ev) => e.type === "revive_portion");
+  expect(portions).toHaveLength(1);
+  expect(portions[0].name).toBe("Lisa");
+});
+
+test("wer nicht in dieser Runde gestimmt hat, schreibt kein revived", async () => {
+  const { round } = await deadWith("Lisa");
+  const late = await register("Nina");
+  const res = await post({ action: "revive", round }, late.session);
+  expect(res.status).toBe(409);
+  const body = await json(await get());
+  expect(types(body.events)).not.toContain("revived");
+});
+
+test("died wird auch geschrieben, wenn die erste Anfrage nach dem Tod die letzte Portion ist", async () => {
+  setTime(T0);
+  const { session } = await register("Lisa");
+  const round = (await json(await get(session))).foodExpires as number;
+  setTime(T0 + LIFETIME); // kein GET dazwischen
+  const body = await json(await post({ action: "revive", round }, session));
+  expect(types(body.events)).toEqual(["revived", "revive_portion", "died", "joined"]);
+  expect(body.events[2].at).toBe(round);
 });
 
 test("Reihenfolge neueste zuerst, höchstens 10 Einträge", async () => {

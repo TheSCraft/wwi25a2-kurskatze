@@ -29,3 +29,8 @@
   color:#5a564d;
   font-size:14px
 }
+
+.activity li span {
+  min-width:0;
+  overflow-wrap:anywhere
+}
