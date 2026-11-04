@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
 import { rules } from "../lib/cat-rules";
+import { unit } from "../lib/server/db";
 import { T0, act, get, json, register, setTime } from "./helpers";
 
 const SECOND = 1000;
@@ -19,15 +20,21 @@ async function ready() {
   setTime(T0 + 6 * SECOND); // gemeinsame Pause (5 s) ist vorbei
   return session;
 }
+// Stimmung neutral (50 % Zuneigung): diese Tests prüfen das Protokoll, nicht den Bonus bei hoher Zuneigung.
+async function normalMood() {
+  await env.DB!.prepare("UPDATE cat SET love=?").bind(T0 + 6 * SECOND + 50 * unit).run();
+}
 
 test("eine angenommene Aktion schreibt genau eine Zeile", async () => {
   const session = await ready();
+  await normalMood();
   expect((await act(session, "food")).status).toBe(200);
   expect(await rows()).toEqual([{ action: "food", points: rules.food.points, at: T0 + 6 * SECOND }]);
 });
 
 test("zwei verschiedene Aktionen schreiben zwei Zeilen mit ihren Punkten", async () => {
   const session = await ready();
+  await normalMood();
   await act(session, "food");
   setTime(T0 + 12 * SECOND);
   expect((await act(session, "meow")).status).toBe(200);
@@ -54,6 +61,7 @@ test("abgelehnte Aktionen schreiben keine Zeile (Cooldown, gemeinsame Pause, tot
 
 test("Gesamtpunkte und Protokoll laufen nicht auseinander", async () => {
   const session = await ready();
+  await normalMood();
   await act(session, "food");
   setTime(T0 + 12 * SECOND);
   await act(session, "meow");

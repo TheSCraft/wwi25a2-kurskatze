@@ -3,6 +3,7 @@ import { expect, test } from "vitest";
 import { nextWeekStart, weekStart } from "../lib/week";
 import { weekBoardSql } from "../lib/server/state";
 import { rules } from "../lib/cat-rules";
+import { unit } from "../lib/server/db";
 import { T0, act, get, json, register, setTime } from "./helpers";
 
 const WS = weekStart(T0);
@@ -126,6 +127,8 @@ test("Aktion wirkt über das Protokoll bis in weekBoard und me", async () => {
   const { session } = await register("Lisa");
   await get(session);
   setTime(T0 + 6000);
+  // Stimmung neutral (50 %): der Test prüft den Weg der Punkte, nicht den Bonus der Startzuneigung.
+  await env.DB!.prepare("UPDATE cat SET love=?").bind(T0 + 6000 + 50 * unit).run();
   await act(session, "food");
   const body = await json(await get(session));
   expect(body.weekBoard).toEqual([{ name: "Lisa", points: rules.food.points }]);

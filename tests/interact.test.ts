@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
 import { actionGain, foodLifetime, minimumTeamSize, rules } from "../lib/cat-rules";
+import { effectivePoints } from "../lib/mood";
 import { unit } from "../lib/server/db";
 import { T0, act, get, json, register, setTime } from "./helpers";
 
@@ -17,10 +18,15 @@ async function ready() {
   setTime(START);
   return session;
 }
+// Stimmung neutral (50 % Zuneigung zum Zeitpunkt `at`) für Tests, die nicht von der Zuneigung handeln.
+async function normalMood(at: number) {
+  await env.DB!.prepare("UPDATE cat SET love=?").bind(at + 50 * unit).run();
+}
 
 // Bei einem Konto teilt der Server durch minimumTeamSize (8): Füttern bringt 100/8 = 12,5 % des Napfs.
 test("Füttern gibt 5 Punkte und ergänzt die Sättigung um 1/8 des Napfs (72 -> 85 %)", async () => {
   const session = await ready();
+  await normalMood(START);
   const res = await act(session, "food");
   expect(res.status).toBe(200);
   const body = (await json(res));
@@ -38,7 +44,7 @@ test("Streicheln hebt die Zuneigung um 12,5 Prozentpunkte (84 -> 97 %), die Sät
   const love = START_LOVE + rules.love.love * unit / minimumTeamSize;
   expect(body.love).toBe(Math.ceil((love - START) / unit));
   expect(body.love).toBe(97); // 84 + 12,5 = 96,5, aufgerundet
-  expect(body.me.points).toBe(rules.love.points);
+  expect(body.me.points).toBe(effectivePoints("love", rules.love.points, "happy")); // Startzuneigung 84 %: Bonus
   expect(body.foodExpires).toBe(START_FOOD);
 });
 
@@ -95,6 +101,7 @@ test("unbekannte Aktion ergibt 400", async () => {
 
 test("Rangliste enthält nur Konten und ist nach Punkten sortiert", async () => {
   const session = await ready();
+  await normalMood(START);
   await act(session, "food");
   const body = (await json(await get(session)));
   expect(body.board).toEqual([{ name: "Lisa", points: 5 }]);
@@ -114,9 +121,10 @@ test("nach Ablauf der Lebensfrist ist Byte tot und Aktionen ergeben 409", async 
 
 test("nach Ablauf des Cooldowns wird dieselbe Aktion wieder angenommen", async () => {
   const session = await ready();
+  await normalMood(START);
   expect((await act(session, "food")).status).toBe(200);
-  // Zuneigung hoch halten: dieser Test prüft nur den Cooldown, nicht das Schmollen nach 12 h Einsamkeit.
-  await env.DB!.prepare("UPDATE cat SET love=?").bind(START + 100 * 3600 * 1000).run();
+  // Zuneigung neutral halten: dieser Test prüft nur den Cooldown, nicht Bonus oder Schmollen nach 12 h Einsamkeit.
+  await normalMood(START + rules.food.seconds * SECOND);
   setTime(START + (rules.food.seconds - 1) * SECOND);
   expect((await act(session, "food")).status).toBe(429);
   setTime(START + rules.food.seconds * SECOND); // Cooldown für food: 43200 s = 12 h
