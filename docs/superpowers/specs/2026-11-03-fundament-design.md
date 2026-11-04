@@ -52,7 +52,7 @@ bleiben unverändert.
 
 ## Tests
 
-- Vitest mit `@cloudflare/vitest-pool-workers`: Tests laufen im Worker-Laufzeitmodell
+- Vitest mit `@cloudflare/vitest-plugin`: Tests laufen im Worker-Laufzeitmodell
   mit frischer lokaler D1. Die Migrationen aus `drizzle/` werden vor jedem Test
   eingespielt.
 - Alle Tests laufen über die Route mit echten `Request`-Objekten, sodass sie den

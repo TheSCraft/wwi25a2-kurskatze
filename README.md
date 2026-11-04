@@ -36,7 +36,7 @@ Löschen von `.wrangler/` setzt die lokale Datenbank zurück, dann ist dieser Sc
 
     pnpm test
 
-Vitest mit `@cloudflare/vitest-pool-workers`: Die Tests laufen in der Workers-Laufzeit mit einer
+Vitest mit `@cloudflare/vitest-plugin`: Die Tests laufen in der Workers-Laufzeit mit einer
 frischen lokalen D1 und prüfen Konto, Aktionen, Cooldowns, Wiederbelebung und gleichzeitige
 Anfragen. Sie brauchen den Dev-Server und die Schritte oben nicht.
 
