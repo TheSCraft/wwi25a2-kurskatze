@@ -23,15 +23,16 @@
   box-shadow:none
 }
 
-.food,.save {
+/* Nur die Aktionsknöpfe einfärben; das Katzenbild trägt dieselben Klassen (cat food usw.). .save liegt außerhalb von .actions */
+.actions .food,.save {
   background:#ffbe77
 }
 
-.love {
+.actions .love {
   background:#f7c2d4
 }
 
-.meow {
+.actions .meow {
   background:#c9c7f4
 }
 
