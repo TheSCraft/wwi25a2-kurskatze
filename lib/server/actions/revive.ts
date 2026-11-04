@@ -11,8 +11,8 @@ export async function handleRevive(body:Body, who:Member, now:number){
    sql("INSERT OR IGNORE INTO events(key,type,player,at) SELECT 'died:'||food_expires,'died',NULL,food_expires FROM cat WHERE id=1 AND food_expires<=?",now),
    sql("UPDATE accounts SET fed_round=? WHERE player=? AND password IS NOT NULL AND COALESCE(joined,0)<=? AND fed_round IS NOT ? AND EXISTS(SELECT 1 FROM cat WHERE id=1 AND food_expires=?)",round,who.player,round,round,round),
    sql(`UPDATE cat SET food_expires=?,active=? WHERE id=1 AND food_expires=? AND changes()>0 AND NOT EXISTS(SELECT 1 FROM accounts WHERE ${roster} AND fed_round IS NOT ?)`,now+foodLifetime,now,round,round),
-   sql("INSERT OR IGNORE INTO events(key,type,player,at) SELECT 'revive_portion:'||?||':'||?,'revive_portion',?,? WHERE EXISTS(SELECT 1 FROM accounts WHERE player=? AND fed_round=?)",round,who.player,who.player,now,who.player,round),
-   sql("INSERT OR IGNORE INTO events(key,type,player,at) SELECT 'revived:'||?,'revived',NULL,? FROM cat WHERE id=1 AND food_expires=? AND EXISTS(SELECT 1 FROM accounts WHERE player=? AND fed_round=?)",round,now,now+foodLifetime,who.player,round)]);
+   sql("INSERT OR IGNORE INTO events(key,type,player,at) SELECT 'revive_portion:'||CAST(? AS INTEGER)||':'||?,'revive_portion',?,? WHERE EXISTS(SELECT 1 FROM accounts WHERE player=? AND fed_round=?)",round,who.player,who.player,now,who.player,round),
+   sql("INSERT OR IGNORE INTO events(key,type,player,at) SELECT 'revived:'||CAST(? AS INTEGER),'revived',NULL,? FROM cat WHERE id=1 AND food_expires=? AND EXISTS(SELECT 1 FROM accounts WHERE player=? AND fed_round=?)",round,now,now+foodLifetime,who.player,round)]);
   const data=await state(who);
   return vote.meta.changes?response(data):response({...data,error:"Deine Portion ist bereits gezählt oder diese Runde ist für dich geschlossen."},409);
 }

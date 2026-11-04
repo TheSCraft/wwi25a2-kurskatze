@@ -1,3 +1,4 @@
+import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
 import { T0, get, post, json, register, setTime } from "./helpers";
 
@@ -134,4 +135,19 @@ test("nach dem Umbenennen erscheint der neue Name", async () => {
   await post({ action: "rename", name: "Lisbeth" }, session);
   const body = await json(await get(session));
   expect(body.events[0]).toMatchObject({ type: "joined", name: "Lisbeth" });
+});
+
+test("gespeicherte Schlüssel enthalten die Runde als Ganzzahl ohne .0", async () => {
+  const { sessions, round } = await deadWith("Lisa", "Tom");
+  await post({ action: "revive", round }, sessions[0]);
+  await post({ action: "revive", round }, sessions[1]);
+  const { results } = await env.DB!.prepare("SELECT key FROM events ORDER BY id").all<{ key: string }>();
+  const keys = results.map((r) => r.key);
+  expect(keys.some((k) => k.includes(".0"))).toBe(false);
+  expect(keys).toContain(`died:${round}`);
+  expect(keys).toContain(`revived:${round}`);
+  const portions = keys.filter((k) => k.startsWith("revive_portion:"));
+  expect(portions).toHaveLength(2);
+  for (const k of portions) expect(k).toMatch(new RegExp(`^revive_portion:${round}:[^:]+$`));
+  expect(keys.filter((k) => k.startsWith("joined:"))).toHaveLength(2);
 });

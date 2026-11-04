@@ -62,7 +62,8 @@
   }
   .columns {
     display:flex;
-    flex-direction:column
+    flex-direction:column;
+    align-items:stretch
   }
   .stage {
     height:280px

@@ -62,7 +62,8 @@ em,.bytehead h2 span {
 .columns {
   display:grid;
   grid-template-columns:minmax(0,1.98fr) minmax(0,1fr);
-  gap:23px
+  gap:23px;
+  align-items:start
 }
 
 .room,.card,.stickers a,dialog {
