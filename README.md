@@ -38,6 +38,11 @@ Beispiel:
 
 Ohne diese Migration antwortet `GET /api/cat` mit 500 und `no such table: events`.
 
+Mit der Wochen-Rangliste kommt eine weitere Migration, `drizzle/0006_silly_whirlwind.sql`. Auf
+eine **bestehende** lokale Datenbank wird sie wie die vorherige einzeln eingespielt. Ohne sie
+antwortet `GET /api/cat` mit 500 und `no such table: actions`. Beim späteren Einrichten eines
+Hostings müssen die Migrationen `0000` bis `0006` der Reihe nach laufen.
+
 Löschen von `.wrangler/` setzt die lokale Datenbank zurück, dann ist dieser Schritt zu wiederholen.
 
 ## Tests

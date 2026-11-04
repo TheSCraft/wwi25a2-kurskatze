@@ -1,0 +1,20 @@
+/* Reiter „Diese Woche“ / „Gesamt“ in der Rangliste. */
+.board .tabs {
+  display:flex;
+  gap:8px;
+  margin:0 0 14px
+}
+
+.board .tabs button {
+  padding:8px 14px;
+  border:2px solid #312e2c;
+  border-radius:999px;
+  background:#fffdf6;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer
+}
+
+.board .tabs button[aria-selected="true"] {
+  background:#ffbe77
+}

@@ -68,7 +68,7 @@ export default function Page(){
 <aside><StatusCard data={data} now={now}/>
 <ScoreCard points={data?.me?.points||0} onBoard={()=>navigate("Rangliste")}/>
 <ActivityCard events={data?.events} now={now}/></aside></div>:null}
-{tab==="Rangliste"&&<Leaderboard data={data} onRoom={()=>navigate("Katzenzimmer")}/>}
+{tab==="Rangliste"&&<Leaderboard data={data} now={now} onRoom={()=>navigate("Katzenzimmer")}/>}
 {tab!=="Rangliste"&&<Stickerbox expanded={tab==="Stickerbox"} open={()=>navigate("Stickerbox")}/>}
 <footer><span>Miau Campus · WWI25A2</span><span>Mit Pfoten programmiert.</span></footer></main>
 <AccountDialog key={dialogKey} open={modal} initialMode={dialogMode} initialName={dialogName} busy={busy} error={formError} onClose={closeDialog} onSwitchMode={()=>setFormError("")} onSubmit={run}/></>}
