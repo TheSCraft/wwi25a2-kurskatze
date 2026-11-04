@@ -82,7 +82,7 @@ Der Typ `Data` in `lib/cat-types.ts` wird um `weekBoard: Entry[]`, `weekStart: n
 
 Abfrage: `SELECT p.name AS name, sum(a.points) AS points FROM actions a JOIN players p ON
 p.id=a.player JOIN accounts ac ON ac.player=p.id WHERE ac.password IS NOT NULL AND a.at>=?
-GROUP BY a.player ORDER BY points DESC, max(a.at) ASC LIMIT 100` mit `weekStart(now)`.
+GROUP BY a.player ORDER BY sum(a.points) DESC, max(a.at) ASC LIMIT 100` mit `weekStart(now)`.
 
 ## Oberfläche
 
