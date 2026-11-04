@@ -8,3 +8,5 @@ export const cooldowns=sqliteTable("cooldowns",{id:text("id").primaryKey(),playe
 export const loginAttempts=sqliteTable("login_attempts",{key:text("key").primaryKey(),tries:integer("tries").notNull(),reset:integer("reset").notNull()});
 
 export const events=sqliteTable("events",{id:integer("id").primaryKey({autoIncrement:true}),key:text("key").notNull().unique(),type:text("type").notNull(),player:text("player"),at:integer("at").notNull()},(t)=>[index("events_at_idx").on(t.at,t.id)]);
+
+export const actions=sqliteTable("actions",{id:integer("id").primaryKey({autoIncrement:true}),player:text("player").notNull(),action:text("action").notNull(),points:integer("points").notNull(),at:integer("at").notNull()},(t)=>[index("actions_at_idx").on(t.at),index("actions_player_at_idx").on(t.player,t.at)]);

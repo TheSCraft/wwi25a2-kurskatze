@@ -43,6 +43,13 @@
       "when": 1793783766607,
       "tag": "0005_glorious_nighthawk",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1793786217154,
+      "tag": "0006_silly_whirlwind",
+      "breakpoints": true
     }
   ]
 }
