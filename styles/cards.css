@@ -1,0 +1,156 @@
+/* Aktionsbuttons, Seitenspalte, Karten, Status, Meter, Punkte und Sammlungskopf. */
+
+.actions {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px
+}
+
+.actions button,.save {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  justify-content:center;
+  font-weight:800;
+  border:1.7px solid;
+  border-radius:9px;
+  padding:12px 4px;
+  box-shadow:2px 3px #332e2a
+}
+
+.actions button:active,.save:active {
+  transform:translate(2px,2px);
+  box-shadow:none
+}
+
+/* Nur die Aktionsknöpfe einfärben; das Katzenbild trägt dieselben Klassen (cat food usw.). .save liegt außerhalb von .actions */
+.actions .food,.save {
+  background:#ffbe77
+}
+
+.actions .love {
+  background:#f7c2d4
+}
+
+.actions .meow {
+  background:#c9c7f4
+}
+
+aside {
+  display:flex;
+  flex-direction:column;
+  gap:17px
+}
+
+.card {
+  padding:23px
+}
+
+.status {
+  flex:1
+}
+
+.card small,.collection small {
+  color:#5a564d;
+  font-size:10px
+}
+
+.card h2,.collection h2,dialog h2 {
+  font-size:30px;
+  margin:8px 0 18px
+}
+
+.meter {
+  margin:16px 0
+}
+
+.meter>div:first-child,.meter span {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  font-size:14px;
+  font-weight:bold
+}
+
+.meter b {
+  font:700 13px monospace
+}
+
+.track {
+  height:12px;
+  border-radius:10px;
+  background:#eee9df;
+  border:1.5px solid;
+  margin-top:7px;
+  overflow:hidden
+}
+
+.track i {
+  height:100%;
+  display:block;
+  border-right:1px solid;
+  transition:width .5s
+}
+
+.mood {
+  border-top:1px dashed #aaa597;
+  padding-top:14px;
+  font-size:12px
+}
+
+.score {
+  background:#d6ead7;
+  position:relative;
+  overflow:hidden
+}
+
+.points {
+  font-size:49px;
+  display:flex;
+  gap:10px;
+  align-items:baseline;
+  margin:6px 0 10px
+}
+
+.points span {
+  font:700 14px Arial;
+  letter-spacing:0
+}
+
+.bigpaw {
+  position:absolute;
+  right:10px;
+  top:35px;
+  width:65px;
+  height:65px;
+  transform:rotate(15deg);
+  opacity:.15
+}
+
+.link {
+  font-weight:700;
+  font-size:13px;
+  border-bottom:1px solid;
+  padding:3px 0;
+  align-self:flex-start
+}
+
+.collection {
+  margin:33px 0
+}
+
+.sectiontop {
+  display:flex;
+  align-items:center;
+  justify-content:space-between
+}
+
+.sectiontop>.link {
+  align-self:center
+}
+
+.collection h2 {
+  margin:4px 0 16px;
+  font-size:34px
+}

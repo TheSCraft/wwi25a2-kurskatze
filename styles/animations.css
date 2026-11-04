@@ -1,0 +1,25 @@
+/* Katzen-Zustände und @keyframes nom/wiggle. */
+
+.cat.food {
+  animation:nom .3s 4
+}
+
+.cat.love {
+  animation:wiggle .5s 3
+}
+
+.cat.meow {
+  animation:nom .55s 2
+}
+
+@keyframes nom {
+  50% {
+    transform:translateY(-10px) scale(1.02,.98)
+  }
+}
+
+@keyframes wiggle {
+  50% {
+    transform:rotate(4deg)
+  }
+}

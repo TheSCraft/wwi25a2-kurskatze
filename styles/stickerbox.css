@@ -1,0 +1,66 @@
+/* Stickerbox-Katalog: Suche, Themenfilter, Zähler/ZIP-Link, lesbare Kategorie-Etiketten. Muss zuletzt kommen (überschreibt .thumb>span). */
+
+.st-tools {
+  display:grid;
+  gap:13px;
+  margin-bottom:12px
+}
+
+.st-tools label {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#fffdf7;
+  border:1.5px solid;
+  border-radius:9px;
+  padding:8px 13px;
+  max-width:360px
+}
+
+.st-tools input {
+  border:0;
+  width:100%;
+  background:transparent;
+  padding:3px
+}
+
+.st-filters {
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap
+}
+
+.st-filters button {
+  border:1.4px solid;
+  border-radius:18px;
+  background:#fffdf7;
+  padding:6px 11px;
+  font-size:13px
+}
+
+.st-filters button[aria-pressed=true] {
+  background:#cbe4d2;
+  font-weight:700
+}
+
+.st-count {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  justify-content:space-between;
+  margin:0 0 17px;
+  font:12px monospace
+}
+
+.st-count a {
+  display:flex;
+  align-items:center;
+  gap:5px
+}
+
+.thumb>span {
+  z-index:1;
+  background:#fffdf6d9;
+  border-radius:4px;
+  padding:2px 4px
+}

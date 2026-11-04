@@ -1,64 +1,72 @@
 "use client";
-import {useState,useEffect,useRef} from "react";
-import {Stickerbox} from "../components/stickerbox";
-import {rules,actionGain} from "../lib/cat-rules";
+import {useEffect,useRef,useState} from "react";
+import {Trophy,Sticker,UserRound,House} from "lucide-react";
+import {useCat,ApiError} from "../hooks/use-cat";
+import {useReaction} from "../hooks/use-reaction";
+import {useSound} from "../hooks/use-sound";
+import {isDead,type Tab} from "../lib/cat-types";
 import {prepareMeow,playMeow} from "../lib/meow-sound";
-import {Gamepad2,Brush,BookOpen,PawPrint,Trophy,Sticker,UserRound,Fish,HandHeart,AudioLines,Heart,Volume2,VolumeX,Download,X,ArrowUpRight,Star,House,Activity} from "lucide-react";
-type Tab="Katzenzimmer"|"Rangliste"|"Stickerbox";type Entry={name:string;points:number};type Data={playerCount:number;revival:{total:number;fed:number;eligible:number;contributed:number};food:number;love:number;calls:number;me:Entry|null;board:Entry[];account:boolean;foodExpires:number;now:number;sharedUntil:number;cooldowns:Record<string,number>};
-const actions=[["food","Füttern",Fish],["love","Streicheln",HandHeart],["meow","Miauen",AudioLines],["play","Spielen",Gamepad2],["brush","Bürsten",Brush],["study","Lernen",BookOpen]] as const;
+import {CatStage} from "../components/cat/CatStage";
+import {ActionPanel} from "../components/cat/ActionPanel";
+import {RevivalPanel} from "../components/cat/RevivalPanel";
+import {StatusCard} from "../components/cat/StatusCard";
+import {ScoreCard} from "../components/cat/ScoreCard";
+import {Leaderboard} from "../components/cat/Leaderboard";
+import {Stickerbox} from "../components/stickerbox";
+import {AccountDialog,type DialogMode} from "../components/cat/AccountDialog";
+
 const phrases={play:["Den Laserpunkt krieg ich noch!"],brush:["Fell-Update installiert."],study:["Heute: lineare Mieugression."],food:["SELECT * FROM Thunfisch;","Nom nom. Prüfung bestanden!"],love:["Schnurr.exe läuft.","Mehr davon, bitte."],meow:["MIAU. War das klausurrelevant?","Miau zurück, letzte Reihe!"]};
-function Bowl(){return <svg className="bowl" viewBox="0 0 100 58" aria-hidden="true"><g stroke="#362d32" strokeWidth="3.5" strokeLinejoin="round"><path fill="#f58083" d="M18 20Q50 10 80 20L90 47Q50 57 8 47Z"/><ellipse cx="49" cy="20" rx="32" ry="8" fill="#985748"/><path fill="#c38a4d" d="M24 19q-1-10 8-9 4-9 11-5 8-8 15 0 9-2 11 7 9 0 7 8-25 7-52-1Z"/><path fill="#fff8df" d="M44 34q3-5 6 0 5-5 7 0 0 4-7 8-6-3-6-8Z"/></g></svg>}
-const sessionKey="byte-session-v2";
-function sessionHeaders():Record<string,string>{const session=localStorage.getItem(sessionKey);return session?{"X-Byte-Session":session}:{}}
+function pick(pool:readonly string[]){return pool[Math.floor(Math.random()*pool.length)]}
+
 export default function Page(){
-const [tab,T]=useState<Tab>("Katzenzimmer"),[d,D]=useState<Data|null>(null),[draft,V]=useState(""),[modal,M]=useState(false),[mode,Mode]=useState<"register"|"login"|"profile">("register"),[password,Password]=useState(""),[busy,B]=useState(false),[msg,S]=useState(""),[react,R]=useState(""),[audio,A]=useState(true),[error,E]=useState(""),[formError,F]=useState(""),[now,Clock]=useState(0);
-const timer=useRef<ReturnType<typeof setTimeout>|null>(null),dialog=useRef<HTMLDialogElement>(null),sending=useRef(false),offset=useRef(0),revision=useRef(0);
-function apply(data:Data){offset.current=data.now-Date.now();Clock(data.now);D(data)}
-useEffect(()=>{let active=true;async function refresh(){const revisionAtStart=revision.current;try{const res=await fetch("/api/cat",{cache:"no-store",headers:sessionHeaders()});if(!res.ok)throw Error();const data=await res.json() as Data;if(active&&!sending.current&&revisionAtStart===revision.current){apply(data);E("")}}catch{if(active)E("Byte ist gerade offline. Wir versuchen es gleich erneut.")}}A(localStorage.getItem("byte-sound")!=="off");refresh();const t=setInterval(refresh,8000),clock=setInterval(()=>Clock(Date.now()+offset.current),1000);return()=>{active=false;clearInterval(t);clearInterval(clock);if(timer.current)clearTimeout(timer.current)}},[]);
-useEffect(()=>{if(modal)dialog.current?.showModal();else dialog.current?.close()},[modal]);
-function show(){Mode(d?.account?"profile":d?.me?"register":"login");V(d?.me?.name||localStorage.getItem("byte-name")||"");Password("");F("");M(true)}
-function close(){Password("");M(false)}
-async function send(action:string,fields:Record<string,string|number>={}){
- if(sending.current)return;if(action==="meow"&&audio)prepareMeow();revision.current++;sending.current=true;B(true);E("");F("");
- try{const res=await fetch("/api/cat",{method:"POST",headers:{"Content-Type":"application/json",...sessionHeaders()},body:JSON.stringify({action,...fields})});const data=await res.json() as Data & {error?:string;session?:string};
- if(!res.ok){if(data.board)apply(data);if(res.status===401&&!["login","register"].includes(action)){localStorage.removeItem(sessionKey);D(prev=>prev?{...prev,account:false,me:null}:prev);show();Mode("login")}throw Error(data.error||"Versuch es noch einmal.")}
- if(action==="register"||action==="login"){
-  if(!data.session)throw Error("Die Sitzung konnte nicht gestartet werden.");
-  localStorage.setItem(sessionKey,data.session);
-  const check=await fetch("/api/cat",{cache:"no-store",headers:sessionHeaders()});
-  if(!check.ok)throw Error("Die Anmeldung konnte nicht bestätigt werden.");
-  const verified=await check.json() as Data;
-  if(!verified.account){localStorage.removeItem(sessionKey);throw Error("Die Anmeldung konnte auf diesem Gerät nicht gespeichert werden.")}
-  apply(verified);close();
- }else if(action==="logout"){localStorage.removeItem(sessionKey);apply(data);close()}
- else if(action==="rename"){apply(data);close()}
- else if(action==="revive"){apply(data);S(data.food>0?"Miau! Ich bin wieder da!":"");R("");if(timer.current)clearTimeout(timer.current);timer.current=setTimeout(()=>S(""),3500)}
- else{apply(data);if(action==="meow"&&audio)playMeow();R(action);const pool=phrases[action as keyof typeof phrases];S(pool[Math.floor(Math.random()*pool.length)]);if(timer.current)clearTimeout(timer.current);timer.current=setTimeout(()=>{S("");R("")},3500)}
- }catch(e){(modal?F:E)(e instanceof Error?e.message:"Verbindung fehlgeschlagen.")}finally{revision.current++;sending.current=false;B(false)}
-}
-const foodMinutes=d?Math.ceil(Math.max(0,d.foodExpires-now)/60000):0;
-const dead=!!d&&now>=d.foodExpires;
-function remaining(a:string){return d?Math.max(0,Math.ceil((Math.max(d.sharedUntil,d.cooldowns[a]||0)-now)/1000)):0}
-function duration(seconds:number){const hours=Math.floor(seconds/3600);return (hours?hours+" h ":"")+Math.floor(seconds%3600/60)+":"+String(seconds%60).padStart(2,"0")}
-function benefit(action:keyof typeof rules){const rule=rules[action];const amount=actionGain(rule.food||rule.love,d?.playerCount||0);return amount?"+ "+amount.toLocaleString("de",{maximumFractionDigits:1})+" % "+(rule.food?"Sättigung":"Zuneigung"):"Miau für den Kurs"}
-useEffect(()=>{function sync(){if(location.hash==="#stickerbox")T("Stickerbox");else if(location.hash==="#rangliste")T("Rangliste");else T("Katzenzimmer")}sync();window.addEventListener("hashchange",sync);return ()=>window.removeEventListener("hashchange",sync)},[]);
-function navigate(t:Tab){T(t);location.hash=t==="Stickerbox"?"stickerbox":t==="Rangliste"?"rangliste":"katzenzimmer";window.scrollTo({top:0,behavior:"smooth"})}function toggle(){if(!audio){prepareMeow();playMeow()}A(!audio);localStorage.setItem("byte-sound",audio?"off":"on")}
-return <><header><div className="bar"><button className="brand" onClick={()=>navigate("Katzenzimmer")}><img src="/cat.svg" alt=""/>Miau Campus<span>WWI25A2</span></button><nav>{(["Katzenzimmer","Rangliste","Stickerbox"] as Tab[]).map((x,i)=>{const I=[House,Trophy,Sticker][i];return <button key={x} aria-current={tab===x?"page":undefined} className={tab===x?"active":""} onClick={()=>navigate(x)}><I size={16}/>{x}</button>})}</nav><button className="profile" onClick={()=>show()}><UserRound size={16}/>{d?.account?d.me?.name:"Anmelden"}</button></div></header><main>
+ const {data,error,setError,busy,now,send}=useCat();
+ const {message,pose,say}=useReaction();
+ const [tab,setTab]=useState<Tab>("Katzenzimmer"),[audio,toggleSound]=useSound();
+ const [modal,setModal]=useState(false),[formError,setFormError]=useState(""),[dialogMode,setDialogMode]=useState<DialogMode>("register"),[dialogName,setDialogName]=useState(""),[dialogKey,setDialogKey]=useState(0);
+ const dead=isDead(data,now);
+ const opener=useRef<HTMLElement|null>(null);
+ // Erst nach dem Commit ist der alte (modale) Dialog weg, dann kann der Fokus zurück zum Auslöser.
+ useEffect(()=>{if(!modal&&opener.current){if(opener.current.isConnected)opener.current.focus();opener.current=null}},[modal]);
+
+ function openDialog(forced?:DialogMode){
+  if(!modal&&document.activeElement instanceof HTMLElement)opener.current=document.activeElement;
+  setDialogMode(forced??(data?.account?"profile":data?.me?"register":"login"));
+  setDialogName(data?.me?.name||localStorage.getItem("byte-name")||"");
+  setDialogKey(k=>k+1);setFormError("");setModal(true);
+ }
+ /** Neuer key beim Schließen: das Dialog-Passwort wird verworfen, bei Fehlern bleibt der Dialog offen. Den Fokus stellt der Effekt auf `modal` wieder her. */
+ function closeDialog(){setDialogKey(k=>k+1);setModal(false)}
+ async function run(action:string,fields:Record<string,string|number>={}){
+  setFormError("");
+  // AudioContext noch im Klick-Handler fortsetzen, bevor auf den Server gewartet wird (Mobilbrowser).
+  if(action==="meow"&&audio)prepareMeow();
+  try{
+   const result=await send(action,fields);
+   if(!result)return;
+   if(["register","login","logout","rename"].includes(action))closeDialog();
+   else if(action==="revive")say(result.food>0?"Miau! Ich bin wieder da!":"","");
+   else{if(action==="meow"&&audio)playMeow();say(pick(phrases[action as keyof typeof phrases]),action)}
+  }catch(e){
+   if(e instanceof ApiError&&e.status===401&&!["login","register"].includes(action))openDialog("login");
+   (modal?setFormError:setError)(e instanceof Error?e.message:"Verbindung fehlgeschlagen.");
+  }
+ }
+ useEffect(()=>{function sync(){if(location.hash==="#stickerbox")setTab("Stickerbox");else if(location.hash==="#rangliste")setTab("Rangliste");else setTab("Katzenzimmer")}sync();window.addEventListener("hashchange",sync);return ()=>window.removeEventListener("hashchange",sync)},[]);
+ function navigate(t:Tab){setTab(t);location.hash=t==="Stickerbox"?"stickerbox":t==="Rangliste"?"rangliste":"katzenzimmer";window.scrollTo({top:0,behavior:"smooth"})}
+
+ return <><header><div className="bar"><button className="brand" onClick={()=>navigate("Katzenzimmer")}><img src="/cat.svg" alt=""/>Miau Campus<span>WWI25A2</span></button><nav>{(["Katzenzimmer","Rangliste","Stickerbox"] as Tab[]).map((x,i)=>{const I=[House,Trophy,Sticker][i];return <button key={x} aria-current={tab===x?"page":undefined} className={tab===x?"active":""} onClick={()=>navigate(x)}><I size={16}/>{x}</button>})}</nav><button className="profile" onClick={()=>openDialog()}><UserRound size={16}/>{data?.account?data.me?.name:"Anmelden"}</button></div></header><main>
 <div className="eyebrow"><span className="dot"/> WWI25A2 <i>/</i> DIGITALER KURSMITBEWOHNER</div>
 <h1>{tab==="Katzenzimmer"?"Das Katzenzimmer":tab==="Rangliste"?"Die Rangliste":"Die Stickerbox"}<em>.</em></h1>
 <p className="sub">{tab==="Katzenzimmer"?"Ein Kurs, eine Katze und verdächtig viel Miau in der Vorlesung.":tab==="Rangliste"?"Wer hat Byte am häufigsten die Vorlesung versüßt?":"Byte für eure Folien, Chats und ausgedruckten Sticker."}</p>
 {error&&<p role="alert">{error}</p>}
-{tab==="Katzenzimmer"?<div className="columns"><section className="room"><div className={dead?"stage memorial":"stage"}><div className="paperlabel"><b/> {dead?"BYTE IST GESTORBEN":"BYTE IST DA"}</div><button className="speaker" onClick={toggle} aria-label={audio?"Ton ausschalten":"Ton einschalten"} title={audio?"Ton an":"Ton aus"}>{audio?<Volume2 size={18}/>:<VolumeX size={18}/>}</button><div className="sun"/><span className="tw t1">✦</span><span className="tw t2">✧</span><span className="tw t3">✦</span><span className="cross">✧</span><span className="speech" aria-live="polite">{dead?"♡":msg||"miau!"}</span><div className="shadow"/><img className={"cat "+react} src={dead?"/art/schlaf.svg":react==="study"?"/art/code.svg":react==="play"?"/art/pfote.svg":"/art/hero.svg"} alt="Byte, eine orange getigerte Kurskatze mit mintgrünem Halstuch"/><Bowl/><span className="stagecaption">ABB. 01 — FELIS CAMPUS</span></div><div className="actionarea"><div className="bytehead"><h2>Das ist Byte<span>.</span></h2><span className="tag">KURSKATZE</span></div><p>{dead?"Bytes Napf ist leer. Jetzt braucht er eine Portion von jedem Kurskonto.":"Professioneller Vorlesungsgast. Bestechlich mit Snacks."}</p>{dead&&d?<section className="revival"><h3>Gemeinsam zurückholen</h3><p aria-live="polite">{d.revival.fed} von {d.revival.total} Portionen sind im Napf.</p><button className="save" disabled={busy||!!d.revival.contributed||(d.account&&!d.revival.eligible)} onClick={()=>d.account?send("revive",{round:d.foodExpires}):show()}>{d.revival.contributed?"Deine Portion ist im Napf ✓":d.account&&!d.revival.eligible?"Ab der nächsten Runde dabei":d.account?"Meine Portion füttern":"Zum Füttern anmelden"}</button><p>Es zählen die Konten, die beim Verhungern schon dabei waren. Mit der letzten Portion wacht Byte wieder satt auf.</p></section>:<div className="actions">{actions.map(([a,label,I])=><button key={a} className={a} onClick={()=>d?.account?send(a):show()} disabled={busy||!d||remaining(a)>0}><I size={21}/><span>{label}<small>{remaining(a)>0?"in "+duration(remaining(a)):"+"+rules[a].points+" Pkt."}</small><small>{benefit(a)}</small></span></button>)}</div>}</div></section>
-<aside><section className="card status"><small><Activity size={14}/> LIVE-STATUS</small><h2>So geht’s Byte</h2>{[[Fish,"Sättigung",d?.food],[Heart,"Zuneigung",d?.love]].map(([Icon,label,value],i)=>{const I=Icon as typeof Fish;return <div className="meter" key={i}><div><span><I size={17}/>{String(label)}</span><b>{value==null?"…":value+" %"}</b></div><div className="track"><i style={{width:(value||0)+"%",background:i?"#f7a9c4":"#fac26e"}}/></div></div>})}<div className="mood"><span className="dot"/>{!d?"Byte wird geweckt …":dead?"Der Kurs kann Byte zurückholen.":d.food<30?"Byte könnte einen Snack vertragen.":d.love<30?"Byte vermisst seine Kursmenschen.":"Byte fühlt sich pudelwohl."}</div><div className="life"><strong>Bis der Napf leer ist</strong>{d&&<b>{foodMinutes?Math.floor(foodMinutes/60)+" h "+foodMinutes%60+" min":"Futterrunde läuft"}</b>}<p>Ein voller Napf reicht 72 Stunden. Jede Portion ergänzt nur einen Teil. Die Wirkung richtet sich nach {d?.playerCount??"…"} registrierten Kurskonten, mindestens nach einer Teamgröße von 8. Füttern geht alle 12 Stunden, Pflege alle 6 Stunden und Miauen alle 15 Minuten. Bei null stirbt Byte. Füttert danach jedes Kurskonto einmal, lebt er wieder.</p></div></section>
-<section className="card score"><small><Star size={14}/> DEIN SCORE</small><div className="points">{d?.me?.points||0}<span>Pfotenpunkte</span><PawPrint className="bigpaw"/></div><button className="link" onClick={()=>navigate("Rangliste")}>Zur Kursrangliste <ArrowUpRight size={16}/></button></section></aside></div>:null}
-{tab==="Rangliste"&&<section className="card board"><small><Trophy size={15}/> KURS-CHARTS</small><h2>Die Pfotenpunkte</h2><p>Miauen gibt 1 Punkt, Bürsten 4, Füttern und Streicheln je 5, Spielen 6 und Lernen 8.</p>{d?.board.length?<ol>{d.board.map((x,i)=><li key={i}><b>{String(i+1).padStart(2,"0")}</b><span>{x.name}</span><strong>{x.points} Pkt.</strong></li>)}</ol>:<p>{d?"Die Rangliste ist noch leer. Wer gibt Byte den ersten Snack?":"Rangliste lädt …"}</p>}<button className="link" onClick={()=>navigate("Katzenzimmer")}>Ins Katzenzimmer <ArrowUpRight size={16}/></button></section>}
+{tab==="Katzenzimmer"?<div className="columns"><section className="room">
+<CatStage dead={dead} message={message} pose={pose} audio={audio} onToggleAudio={toggleSound}/>
+<div className="actionarea"><div className="bytehead"><h2>Das ist Byte<span>.</span></h2><span className="tag">KURSKATZE</span></div><p>{dead?"Bytes Napf ist leer. Jetzt braucht er eine Portion von jedem Kurskonto.":"Professioneller Vorlesungsgast. Bestechlich mit Snacks."}</p>
+{dead&&data?<RevivalPanel data={data} busy={busy} onRevive={()=>run("revive",{round:data.foodExpires})} onLogin={()=>openDialog()}/>:<ActionPanel data={data} now={now} busy={busy} onAction={a=>run(a)} onLogin={()=>openDialog()}/>}
+</div></section>
+<aside><StatusCard data={data} now={now}/>
+<ScoreCard points={data?.me?.points||0} onBoard={()=>navigate("Rangliste")}/></aside></div>:null}
+{tab==="Rangliste"&&<Leaderboard data={data} onRoom={()=>navigate("Katzenzimmer")}/>}
 {tab!=="Rangliste"&&<Stickerbox expanded={tab==="Stickerbox"} open={()=>navigate("Stickerbox")}/>}
 <footer><span>Miau Campus · WWI25A2</span><span>Mit Pfoten programmiert.</span></footer></main>
-<dialog ref={dialog} onCancel={e=>{if(busy)e.preventDefault();else close()}}><form onSubmit={e=>{e.preventDefault();send(mode==="profile"?"rename":mode,mode==="profile"?{name:draft}:{name:draft,password})}}>
-<button disabled={busy} type="button" className="close" onClick={close} aria-label="Schließen"><X/></button>
-<small>WWI25A2 · KURSKONTO</small><h2>{mode==="profile"?"Dein Profil":mode==="login"?"Willkommen zurück!":"Konto erstellen"}</h2>
-<p>{mode==="profile"?"Mit deinem Spitznamen und Passwort kannst du dich auch auf einem anderen Gerät anmelden.":mode==="login"?"Melde dich mit deinem Spitznamen und Passwort an.":"Wähle deinen Spitznamen für die Rangliste und ein eigenes Passwort."}</p>
-<label>Spitzname<input required name="username" autoComplete="username" maxLength={22} value={draft} onChange={e=>V(e.target.value)} placeholder="z. B. Schnurrbert"/></label>
-{mode!=="profile"&&<label style={{marginTop:12}}>Passwort<input required name="password" type="password" autoComplete={mode==="login"?"current-password":"new-password"} minLength={mode==="register"?8:1} maxLength={128} value={password} onChange={e=>Password(e.target.value)} placeholder={mode==="register"?"Mindestens 8 Zeichen":"Dein Passwort"}/></label>}
-{formError&&<p role="alert">{formError}</p>}<button className="save" disabled={busy||!draft.trim()||(mode!=="profile"&&!password)}>{mode==="profile"?"Spitznamen speichern":mode==="login"?"Anmelden":"Konto erstellen"}</button>
-{mode==="profile"?<button type="button" disabled={busy} className="formlink" onClick={()=>send("logout")}>Auf diesem Gerät abmelden</button>:<button type="button" disabled={busy} className="formlink" onClick={()=>{Mode(mode==="register"?"login":"register");Password("");F("")}}>{mode==="login"?"Neu hier? Konto erstellen":"Schon registriert? Anmelden"}</button>}</form></dialog></>}
+<AccountDialog key={dialogKey} open={modal} initialMode={dialogMode} initialName={dialogName} busy={busy} error={formError} onClose={closeDialog} onSwitchMode={()=>setFormError("")} onSubmit={run}/></>}
