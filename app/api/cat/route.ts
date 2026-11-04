@@ -1,5 +1,5 @@
 import {env} from "cloudflare:workers";
-import {foodLifetime, rules, sharedPause} from "../../../lib/cat-rules";
+import {foodLifetime, rules, sharedPause, minimumTeamSize} from "../../../lib/cat-rules";
 
 const unit=360000, month=30*86400000;
 const db=()=>env.DB!;
@@ -31,10 +31,10 @@ async function initialize(now:number){
 const roster="password IS NOT NULL AND COALESCE(joined,0)<=food_expires";
 async function state(who:Identity){
  const now=Date.now(), id=who.player||"";
- const [c,r,p,t,rev]=await db().batch([sql("SELECT food_expires AS food,love,calls,active FROM cat WHERE id=1"),sql("SELECT name,points FROM players JOIN accounts ON accounts.player=players.id WHERE accounts.password IS NOT NULL ORDER BY points DESC,last ASC LIMIT 100"),sql("SELECT name,points FROM players WHERE id=?",id),sql("SELECT action,until FROM cooldowns WHERE player=? AND until>?",id,now),sql(`SELECT count(*) AS total,count(CASE WHEN fed_round=food_expires THEN 1 END) AS fed,coalesce(max(player=?),0) AS eligible,coalesce(max(player=? AND fed_round=food_expires),0) AS contributed FROM cat JOIN accounts ON ${roster} WHERE cat.id=1 AND food_expires<=?`,id,id,now)]);
+ const [c,r,p,t,rev,team]=await db().batch([sql("SELECT food_expires AS food,love,calls,active FROM cat WHERE id=1"),sql("SELECT name,points FROM players JOIN accounts ON accounts.player=players.id WHERE accounts.password IS NOT NULL ORDER BY points DESC,last ASC LIMIT 100"),sql("SELECT name,points FROM players WHERE id=?",id),sql("SELECT action,until FROM cooldowns WHERE player=? AND until>?",id,now),sql(`SELECT count(*) AS total,count(CASE WHEN fed_round=food_expires THEN 1 END) AS fed,coalesce(max(player=?),0) AS eligible,coalesce(max(player=? AND fed_round=food_expires),0) AS contributed FROM cat JOIN accounts ON ${roster} WHERE cat.id=1 AND food_expires<=?`,id,id,now),sql("SELECT count(*) AS total FROM accounts WHERE password IS NOT NULL")]);
  const revival=rev.results[0] as {total:number;fed:number;eligible:number;contributed:number};
  const cat=c.results[0] as {food:number;love:number;calls:number;active:number};
- return {revival,food:Math.max(0,Math.ceil((cat.food-now)*100/foodLifetime)),love:Math.max(0,Math.ceil((cat.love-now)/unit)),calls:cat.calls,board:r.results,me:p.results[0]||null,account:who.account,foodExpires:cat.food,sharedUntil:cat.active+sharedPause,now,cooldowns:Object.fromEntries(t.results.map(row=>{const x=row as {action:string;until:number};return [x.action,x.until]}))};
+ return {playerCount:Number((team.results[0] as {total:number}).total),revival,food:Math.max(0,Math.ceil((cat.food-now)*100/foodLifetime)),love:Math.max(0,Math.ceil((cat.love-now)/unit)),calls:cat.calls,board:r.results,me:p.results[0]||null,account:who.account,foodExpires:cat.food,sharedUntil:cat.active+sharedPause,now,cooldowns:Object.fromEntries(t.results.map(row=>{const x=row as {action:string;until:number};return [x.action,x.until]}))};
 }
 function response(data:unknown,status=200){return Response.json(data,{status,headers:{"Cache-Control":"private, no-store","Vary":"X-Byte-Session"}})}
 export async function GET(req:Request){await initialize(Date.now());return response(await state(await identity(req)))}
@@ -95,7 +95,8 @@ export async function POST(req:Request){
  const [accepted]=await db().batch([
   sql("INSERT INTO cooldowns(id,player,action,until) SELECT ?,?,?,? FROM cat WHERE id=1 AND food_expires>? AND active<=? ON CONFLICT(id) DO UPDATE SET until=excluded.until WHERE cooldowns.until<=?",slot,who.player,action,now+rule.seconds*1000,now,now-sharedPause,now),
   sql("UPDATE players SET points=points+?,last=? WHERE id=? AND changes()>0",rule.points,now,who.player),
-  sql("UPDATE cat SET active=?,food_expires=CASE WHEN ?>0 THEN ? ELSE food_expires END,love=CASE WHEN ?>0 THEN min(?,max(love,?)+?) ELSE love END,calls=calls+? WHERE id=1 AND changes()>0",now,rule.food,now+foodLifetime,rule.love,now+100*unit,now,rule.love*unit,Number(action==="meow"))]);
+  // Count accounts inside the same atomic batch, including concurrent registrations.
+  sql("UPDATE cat SET active=?,food_expires=min(?,food_expires+CAST(? / max(?,(SELECT count(*) FROM accounts WHERE password IS NOT NULL)) AS INTEGER)),love=CASE WHEN ?>0 THEN min(?,max(love,?)+? / max(?,(SELECT count(*) FROM accounts WHERE password IS NOT NULL))) ELSE love END,calls=calls+? WHERE id=1 AND changes()>0",now,now+foodLifetime,rule.food*foodLifetime/100,minimumTeamSize,rule.love,now+100*unit,now,rule.love*unit,minimumTeamSize,Number(action==="meow"))]);
  const data=await state(who);
  if(accepted.meta.changes)return response(data);
  return data.food===0?response({...data,error:"Byte ist gestorben. Beteilige dich an der gemeinsamen Futterrunde."},409):response({...data,error:"Byte braucht noch einen Moment."},429);
