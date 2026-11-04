@@ -1,5 +1,6 @@
 import {History} from "lucide-react";
 import type {FeedEvent} from "../../lib/cat-types";
+import {goalById} from "../../lib/goals";
 import {relativeTime} from "../../lib/format-time";
 
 type Props={events:FeedEvent[]|undefined;now:number};
@@ -11,6 +12,7 @@ function describe(e:FeedEvent){
   case "revive_portion":return name+" hat eine Portion in den Napf gelegt";
   case "revived":return "Byte ist wieder da";
   case "died":return "Byte ist gestorben";
+  case "goal":{const g=e.detail?goalById(e.detail):undefined;return g?"Kursziel erreicht: "+g.badge:"Kursziel erreicht"}
  }
 }
 

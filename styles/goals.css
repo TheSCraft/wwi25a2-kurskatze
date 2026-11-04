@@ -1,0 +1,100 @@
+/* Karte „Kursziele“ und Optik-Freischaltungen auf der Bühne. */
+.goals ul {
+  padding:0;
+  margin:0;
+  list-style:none
+}
+
+.goalbars li {
+  margin-bottom:12px
+}
+
+.goalbars li > div:first-child {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:14px
+}
+
+.goalbars .track {
+  margin-top:6px
+}
+
+.goals .badgecount {
+  margin:14px 0 8px;
+  color:#5a564d;
+  font-size:13px
+}
+
+.badges {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px
+}
+
+.badges li {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  border:2px solid #312e2c;
+  border-radius:50%
+}
+
+.badges li.got {
+  background:#ffbe77
+}
+
+.badges li.open {
+  border-color:#b9b4a6;
+  color:#b9b4a6;
+  background:#fffdf6
+}
+
+.goals .sr {
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  white-space:nowrap
+}
+
+.stage.fx-gold-bowl .bowl {
+  filter:sepia(1) saturate(3) hue-rotate(-8deg) brightness(1.1)
+}
+
+.stage.fx-stars::before {
+  content:"";
+  z-index:-1;
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:radial-gradient(circle at 12% 22%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 78% 16%,#fff7c2 0 2px,transparent 2.5px),radial-gradient(circle at 88% 58%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 30% 70%,#fff7c2 0 1.5px,transparent 2px),radial-gradient(circle at 60% 34%,#fff7c2 0 1px,transparent 1.5px);
+  animation:fx-twinkle 3.2s ease-in-out infinite alternate
+}
+
+@keyframes fx-twinkle {
+  from { opacity:.45 }
+  to { opacity:1 }
+}
+
+.stage.fx-sunrise::after {
+  content:"";
+  z-index:-1;
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(to top,#ffb36b55,#ffe9a800 60%)
+}
+
+.stage.fx-glow .cat {
+  filter:drop-shadow(0 3px 0 #79513d35) drop-shadow(0 0 14px #ffd36bcc)
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .stage.fx-stars::before {
+    animation:none
+  }
+}

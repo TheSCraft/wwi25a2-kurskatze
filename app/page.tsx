@@ -13,6 +13,8 @@ import {StatusCard} from "../components/cat/StatusCard";
 import {ScoreCard} from "../components/cat/ScoreCard";
 import {ActivityCard} from "../components/cat/ActivityCard";
 import {Leaderboard} from "../components/cat/Leaderboard";
+import {GoalsCard} from "../components/cat/GoalsCard";
+import {unlockedTitle,unlockedEffects} from "../lib/goals";
 import {Stickerbox} from "../components/stickerbox";
 import {AccountDialog,type DialogMode} from "../components/cat/AccountDialog";
 
@@ -25,6 +27,7 @@ export default function Page(){
  const [tab,setTab]=useState<Tab>("Katzenzimmer"),[audio,toggleSound]=useSound();
  const [modal,setModal]=useState(false),[formError,setFormError]=useState(""),[dialogMode,setDialogMode]=useState<DialogMode>("register"),[dialogName,setDialogName]=useState(""),[dialogKey,setDialogKey]=useState(0);
  const dead=isDead(data,now);
+ const reachedIds=data?.goals?Object.keys(data.goals.reached):[];
  const opener=useRef<HTMLElement|null>(null);
  // Erst nach dem Commit ist der alte (modale) Dialog weg, dann kann der Fokus zurück zum Auslöser.
  useEffect(()=>{if(!modal&&opener.current){if(opener.current.isConnected)opener.current.focus();opener.current=null}},[modal]);
@@ -61,13 +64,14 @@ export default function Page(){
 <p className="sub">{tab==="Katzenzimmer"?"Ein Kurs, eine Katze und verdächtig viel Miau in der Vorlesung.":tab==="Rangliste"?"Wer hat Byte am häufigsten die Vorlesung versüßt?":"Byte für eure Folien, Chats und ausgedruckten Sticker."}</p>
 {error&&<p role="alert">{error}</p>}
 {tab==="Katzenzimmer"?<div className="columns"><section className="room">
-<CatStage dead={dead} message={message} pose={pose} audio={audio} onToggleAudio={toggleSound}/>
-<div className="actionarea"><div className="bytehead"><h2>Das ist Byte<span>.</span></h2><span className="tag">KURSKATZE</span></div><p>{dead?"Bytes Napf ist leer. Jetzt braucht er eine Portion von jedem Kurskonto.":"Professioneller Vorlesungsgast. Bestechlich mit Snacks."}</p>
+<CatStage dead={dead} message={message} pose={pose} audio={audio} effects={unlockedEffects(reachedIds)} onToggleAudio={toggleSound}/>
+<div className="actionarea"><div className="bytehead"><h2>Das ist Byte<span>.</span></h2><span className="tag">{unlockedTitle(reachedIds).toLocaleUpperCase("de")}</span></div><p>{dead?"Bytes Napf ist leer. Jetzt braucht er eine Portion von jedem Kurskonto.":"Professioneller Vorlesungsgast. Bestechlich mit Snacks."}</p>
 {dead&&data?<RevivalPanel data={data} busy={busy} onRevive={()=>run("revive",{round:data.foodExpires})} onLogin={()=>openDialog()}/>:<ActionPanel data={data} now={now} busy={busy} onAction={a=>run(a)} onLogin={()=>openDialog()}/>}
 </div></section>
 <aside><StatusCard data={data} now={now}/>
 <ScoreCard points={data?.me?.points||0} onBoard={()=>navigate("Rangliste")}/>
-<ActivityCard events={data?.events} now={now}/></aside></div>:null}
+<ActivityCard events={data?.events} now={now}/>
+<GoalsCard data={data?.goals}/></aside></div>:null}
 {tab==="Rangliste"&&<Leaderboard data={data} now={now} onRoom={()=>navigate("Katzenzimmer")}/>}
 {tab!=="Rangliste"&&<Stickerbox expanded={tab==="Stickerbox"} open={()=>navigate("Stickerbox")}/>}
 <footer><span>Miau Campus · WWI25A2</span><span>Mit Pfoten programmiert.</span></footer></main>
