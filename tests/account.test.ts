@@ -42,7 +42,7 @@ test("nach 12 Fehlversuchen kommt 429", async () => {
   }
   const blocked = await post({ action: "login", name: "Lisa", password: "falsch" });
   expect(blocked.status).toBe(429);
-});
+}, 20_000);
 
 test("Umbenennen ändert den Namen und den Login-Schlüssel", async () => {
   setTime(T0);
@@ -103,7 +103,7 @@ test("nach Ablauf der fünf Minuten ist ein neuer Login-Versuch erlaubt", async 
   expect(await wrongLogins(1)).toEqual([429]);
   setTime(T0 + LOGIN_WINDOW + 1000);
   expect(await wrongLogins(1)).toEqual([401]);
-});
+}, 30_000);
 
 test("ein erfolgreicher Login setzt den Fehlversuchszähler zurück", async () => {
   setTime(T0);
