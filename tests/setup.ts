@@ -10,7 +10,7 @@ const migrations = import.meta.glob("../drizzle/*.sql", {
 async function migrate() {
   const db = env.DB!;
   const exists = await db
-    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='cat'")
+    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='events'")
     .first();
   if (exists) return;
   const files = Object.keys(migrations).sort();
@@ -27,7 +27,7 @@ beforeEach(async () => {
   await migrate();
   const db = env.DB!;
   await db.batch(
-    ["cooldowns", "sessions", "accounts", "players", "cat", "login_attempts"].map((t) =>
+    ["cooldowns", "sessions", "accounts", "players", "cat", "login_attempts", "events"].map((t) =>
       db.prepare(`DELETE FROM ${t}`),
     ),
   );

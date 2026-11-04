@@ -71,7 +71,7 @@ Jeweils im selben Batch (D1-Batches sind eine Transaktion) wie die Änderung:
 ## API
 
 `state()` liefert ein neues Feld `events`: die letzten 10 Ereignisse, neueste zuerst
-(`ORDER BY at DESC, id DESC LIMIT 10`), je `{type, at, name}`. Der Name kommt per
+(`ORDER BY at DESC, id DESC LIMIT 10`), je `{id, type, at, name}`. Der Name kommt per
 `LEFT JOIN players` (aktueller Spitzname). Die Abfrage ist eine weitere Anweisung im
 bestehenden Batch, also kein zusätzlicher Aufruf. Der Typ `Data` in `lib/cat-types.ts` wird
 um `events` erweitert. Das bestehende 8-Sekunden-Polling aktualisiert den Feed.

@@ -36,6 +36,13 @@
       "when": 1793715557473,
       "tag": "0004_wooden_colossus",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1793783766607,
+      "tag": "0005_glorious_nighthawk",
+      "breakpoints": true
     }
   ]
 }
