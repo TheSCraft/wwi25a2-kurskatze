@@ -1,3 +1,4 @@
+import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
 import { actionGain, foodLifetime, minimumTeamSize, rules } from "../lib/cat-rules";
 import { unit } from "../lib/server/db";
@@ -114,6 +115,8 @@ test("nach Ablauf der Lebensfrist ist Byte tot und Aktionen ergeben 409", async 
 test("nach Ablauf des Cooldowns wird dieselbe Aktion wieder angenommen", async () => {
   const session = await ready();
   expect((await act(session, "food")).status).toBe(200);
+  // Zuneigung hoch halten: dieser Test prüft nur den Cooldown, nicht das Schmollen nach 12 h Einsamkeit.
+  await env.DB!.prepare("UPDATE cat SET love=?").bind(START + 100 * 3600 * 1000).run();
   setTime(START + (rules.food.seconds - 1) * SECOND);
   expect((await act(session, "food")).status).toBe(429);
   setTime(START + rules.food.seconds * SECOND); // Cooldown für food: 43200 s = 12 h

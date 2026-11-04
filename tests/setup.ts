@@ -10,7 +10,7 @@ const migrations = import.meta.glob("../drizzle/*.sql", {
 async function migrate() {
   const db = env.DB!;
   const exists = await db
-    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='goals_reached'")
+    .prepare("SELECT name FROM pragma_table_info('cat') WHERE name='settled'")
     .first();
   if (exists) return;
   const files = Object.keys(migrations).sort();

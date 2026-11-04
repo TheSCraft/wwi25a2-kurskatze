@@ -64,6 +64,13 @@
       "when": 1793788455791,
       "tag": "0008_backfill_actions_counter",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1793802773391,
+      "tag": "0009_big_wendigo",
+      "breakpoints": true
     }
   ]
 }

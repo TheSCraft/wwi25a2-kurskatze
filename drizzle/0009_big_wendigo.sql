@@ -1,0 +1,1 @@
+ALTER TABLE `cat` ADD `settled` integer;
