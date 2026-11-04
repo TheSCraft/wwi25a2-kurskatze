@@ -16,7 +16,7 @@ export async function POST(req:Request){
  if(action==="logout")return handleLogout(req);
  if(action==="register"||action==="login")return handleCredentials(req,body,who,now);
  if(!who.account||!who.player)return response({error:"Bitte melde dich an."},401);
- if(action==="rename")return handleRename(req,body,who as Member);
- if(action==="revive")return handleRevive(req,body,who as Member,now);
- return handleInteract(req,body,who as Member,now);
+ if(action==="rename")return handleRename(body,who as Member);
+ if(action==="revive")return handleRevive(body,who as Member,now);
+ return handleInteract(body,who as Member,now);
 }

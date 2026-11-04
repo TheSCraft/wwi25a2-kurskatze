@@ -9,7 +9,7 @@ export async function handleLogout(req:Request){
 }
 
 export async function handleCredentials(req:Request, body:Body, who:Identity, now:number){
- const {action}=body;
+  const {action}=body;
   const name=typeof body.name==="string"?body.name.trim():"";
   const password=body.password;
   if(!name||name.length>22||typeof password!=="string"||password.length>128||!password.length)return response({error:"Bitte prüfe Spitzname und Passwort."},400);
@@ -37,7 +37,7 @@ export async function handleCredentials(req:Request, body:Body, who:Identity, no
 
 }
 
-export async function handleRename(_req:Request, body:Body, who:Member){
+export async function handleRename(body:Body, who:Member){
   const name=typeof body.name==="string"?body.name.trim():"";if(!name||name.length>22)return response({error:"Ungültiger Spitzname."},400);
   try{await db().batch([sql("UPDATE accounts SET key=? WHERE player=?",loginKey(name),who.player),sql("UPDATE players SET name=? WHERE id=?",name,who.player)])}catch(e){if(String(e).includes("UNIQUE"))return response({error:"Dieser Spitzname ist schon vergeben."},409);throw e}return response(await state(who));
 }

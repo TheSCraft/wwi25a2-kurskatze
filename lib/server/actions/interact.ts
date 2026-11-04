@@ -4,7 +4,7 @@ import {state} from "../state";
 import {rules,foodLifetime,sharedPause} from "../../cat-rules";
 import type {Member} from "../auth";
 
-export async function handleInteract(_req:Request, body:Body, who:Member, now:number){
+export async function handleInteract(body:Body, who:Member, now:number){
  const {action}=body as {action:string};
  if(!Object.hasOwn(rules,action))return response({error:"Unbekannte Aktion."},400);
  const rule=rules[action as keyof typeof rules],slot=who.player+"/"+action;

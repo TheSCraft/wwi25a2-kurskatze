@@ -5,7 +5,7 @@ import {X} from "lucide-react";
 export type DialogMode="register"|"login"|"profile";
 type Props={open:boolean;initialMode:DialogMode;initialName:string;busy:boolean;error:string;onClose:()=>void;onSwitchMode:()=>void;onSubmit:(action:string,fields:Record<string,string>)=>void};
 
-/** Die Seite gibt beim Öffnen einen neuen key mit, dadurch starten Modus, Name und Passwort frisch. */
+/** Die Seite gibt beim Öffnen und beim Schließen einen neuen key mit, dadurch starten Modus, Name und Passwort frisch und ein eingegebenes Passwort bleibt nach dem Schließen nicht im DOM. */
 export function AccountDialog({open,initialMode,initialName,busy,error,onClose,onSwitchMode,onSubmit}:Props){
  const [mode,setMode]=useState<DialogMode>(initialMode),[draft,setDraft]=useState(initialName),[password,setPassword]=useState("");
  const dialog=useRef<HTMLDialogElement>(null);

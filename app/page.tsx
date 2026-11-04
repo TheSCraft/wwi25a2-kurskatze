@@ -1,8 +1,9 @@
 "use client";
-import {useEffect,useState} from "react";
+import {useEffect,useRef,useState} from "react";
 import {Trophy,Sticker,UserRound,House} from "lucide-react";
 import {useCat,ApiError} from "../hooks/use-cat";
 import {useReaction} from "../hooks/use-reaction";
+import {useSound} from "../hooks/use-sound";
 import {isDead,type Tab} from "../lib/cat-types";
 import {playMeow} from "../lib/sound";
 import {CatStage} from "../components/cat/CatStage";
@@ -20,17 +21,20 @@ function pick(pool:readonly string[]){return pool[Math.floor(Math.random()*pool.
 export default function Page(){
  const {data,error,setError,busy,now,send}=useCat();
  const {message,pose,say}=useReaction();
- const [tab,setTab]=useState<Tab>("Katzenzimmer"),[audio,setAudio]=useState(false);
+ const [tab,setTab]=useState<Tab>("Katzenzimmer"),[audio,toggleSound]=useSound();
  const [modal,setModal]=useState(false),[formError,setFormError]=useState(""),[dialogMode,setDialogMode]=useState<DialogMode>("register"),[dialogName,setDialogName]=useState(""),[dialogKey,setDialogKey]=useState(0);
  const dead=isDead(data,now);
- useEffect(()=>{setAudio(localStorage.getItem("byte-sound")==="on")},[]);
+ const opener=useRef<HTMLElement|null>(null);
+ // Erst nach dem Commit ist der alte (modale) Dialog weg, dann kann der Fokus zurück zum Auslöser.
+ useEffect(()=>{if(!modal&&opener.current){if(opener.current.isConnected)opener.current.focus();opener.current=null}},[modal]);
 
  function openDialog(forced?:DialogMode){
+  if(!modal&&document.activeElement instanceof HTMLElement)opener.current=document.activeElement;
   setDialogMode(forced??(data?.account?"profile":data?.me?"register":"login"));
   setDialogName(data?.me?.name||localStorage.getItem("byte-name")||"");
   setDialogKey(k=>k+1);setFormError("");setModal(true);
  }
- /** Neuer key beim Schließen: das Dialog-Passwort wird verworfen, bei Fehlern bleibt der Dialog offen. */
+ /** Neuer key beim Schließen: das Dialog-Passwort wird verworfen, bei Fehlern bleibt der Dialog offen. Den Fokus stellt der Effekt auf `modal` wieder her. */
  function closeDialog(){setDialogKey(k=>k+1);setModal(false)}
  async function run(action:string,fields:Record<string,string|number>={}){
   setFormError("");
@@ -46,7 +50,6 @@ export default function Page(){
   }
  }
  function navigate(t:Tab){setTab(t);window.scrollTo({top:0,behavior:"smooth"})}
- function toggleSound(){setAudio(!audio);localStorage.setItem("byte-sound",audio?"off":"on")}
 
  return <><header><div className="bar"><button className="brand" onClick={()=>navigate("Katzenzimmer")}><img src="/cat.svg" alt=""/>Miau Campus<span>WWI25A2</span></button><nav>{(["Katzenzimmer","Rangliste","Stickerbox"] as Tab[]).map((x,i)=>{const I=[House,Trophy,Sticker][i];return <button key={x} aria-current={tab===x?"page":undefined} className={tab===x?"active":""} onClick={()=>navigate(x)}><I size={16}/>{x}</button>})}</nav><button className="profile" onClick={()=>openDialog()}><UserRound size={16}/>{data?.account?data.me?.name:"Anmelden"}</button></div></header><main>
 <div className="eyebrow"><span className="dot"/> WWI25A2 <i>/</i> DIGITALER KURSMITBEWOHNER</div>

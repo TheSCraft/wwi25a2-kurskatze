@@ -4,7 +4,7 @@ import {state} from "../state";
 import {foodLifetime} from "../../cat-rules";
 import type {Member} from "../auth";
 
-export async function handleRevive(_req:Request, body:Body, who:Member, now:number){
+export async function handleRevive(body:Body, who:Member, now:number){
   const round=body.round;
   if(!Number.isSafeInteger(round)||typeof round!=="number"||round>now)return response({error:"Diese Futterrunde ist nicht aktiv."},400);
   const [vote]=await db().batch([
