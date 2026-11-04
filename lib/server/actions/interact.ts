@@ -16,7 +16,7 @@ export async function handleInteract(body:Body, who:Member, now:number){
  // Zuneigung vor dem Batch lesen: Stufe, Punkte und Futterwirkung werden vor dem Batch bestimmt (Guard `love=?` im Cooldown).
  const cat=await db().prepare("SELECT love FROM cat WHERE id=1").first<{love:number}>();
  const love=cat?cat.love:0,level=moodLevel(love,now);
- if(level==="sulking"&&action==="meow"){const data=await state(who);return response({...data,error:"Byte schmollt und antwortet nicht."},409)}
+ if(level==="sulking"&&action==="meow"){const data=await state(who);return response({...data,error:data.food===0?"Byte ist gestorben. Beteilige dich an der gemeinsamen Futterrunde.":"Byte schmollt und antwortet nicht."},409)}
  const points=effectivePoints(action,rule.points,level),foodGain=rule.food*foodLifetime/100*foodFactor(level);
  // The batch serializes the eligibility check, points and shared cat update.
  const [,accepted]=await db().batch([settleStatement(now),

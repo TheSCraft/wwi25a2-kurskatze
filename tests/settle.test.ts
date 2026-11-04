@@ -1,7 +1,8 @@
 import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
+import { foodLifetime } from "../lib/cat-rules";
 import { hungerExtra, sulkGrace } from "../lib/mood";
-import { T0, get, json, register, setTime } from "./helpers";
+import { T0, get, json, post, register, setTime } from "./helpers";
 
 type Cat = { food_expires: number; love: number; active: number; settled: number | null };
 async function cat(): Promise<Cat> {
@@ -95,4 +96,21 @@ test("Tod durch die Abrechnung: died mit der echten Todeszeit, Sättigung 0", as
   const diedEvents = body.events.filter((e: { type: string }) => e.type === "died");
   expect(diedEvents).toHaveLength(1);
   expect(diedEvents[0].at).toBe(died);
+});
+
+test("nach einer Wiederbelebung beginnt die Zählung neu", async () => {
+  const session = await lonelyCat(); // love = active = T0
+  const now = T0 + 10 * 3_600_000;
+  setTime(now);
+  await setCat("food_expires=?", now - 1000);
+  const round = (await json(await get(session))).foodExpires; // schreibt died
+  expect(round).toBe(now - 1000);
+  expect((await post({ action: "revive", round }, session)).status).toBe(200);
+  expect(await cat()).toMatchObject({ food_expires: now + foodLifetime, active: now });
+  setTime(now + 30_000);
+  await get(session);
+  expect(await cat()).toMatchObject({ food_expires: now + foodLifetime, settled: null });
+  setTime(now + 120_000);
+  await get(session);
+  expect(await cat()).toMatchObject({ food_expires: now + foodLifetime - hungerExtra * 120_000, settled: now + 120_000 });
 });

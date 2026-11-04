@@ -74,6 +74,7 @@ test("Schmollen: Miauen wird abgelehnt und hinterlässt nichts", async () => {
   const res = await act(session, "meow");
   expect(res.status).toBe(409);
   expect((await json(res)).error).toBe("Byte schmollt und antwortet nicht.");
+  expect((await json(await get(session))).me.points).toBe(0);
   expect(await protocol()).toEqual([]);
   const cooldowns = await env.DB!.prepare("SELECT count(*) AS n FROM cooldowns").first<{ n: number }>();
   expect(cooldowns!.n).toBe(0);
@@ -114,4 +115,26 @@ test("Die Abrechnung läuft vor der Aktion (zusätzlicher Hunger der Schmollzeit
   expect(res.status).toBe(200);
   const lonelyMs = NOW - (T0 - 5 * 3_600_000 + sulkGrace); // Zeit nach der Schutzfrist
   expect((await foodExpires()) - before).toBe(-0.5 * lonelyMs + 16_200_000); // Abzug, dann halbes Futter
+});
+
+test("Tote Katze, Zuneigung lange bei 0 %: Miauen meldet den Tod, nicht das Schmollen", async () => {
+  const session = await ready();
+  await env.DB!.prepare("UPDATE cat SET love=?,food_expires=?").bind(NOW - 10 * 3_600_000, NOW - 1000).run();
+  const res = await act(session, "meow");
+  expect(res.status).toBe(409);
+  expect((await json(res)).error).toBe("Byte ist gestorben. Beteilige dich an der gemeinsamen Futterrunde.");
+});
+
+test("Ende der Schutzfrist: eine Millisekunde davor ist Byte einsam, Miauen geht", async () => {
+  const session = await ready();
+  await env.DB!.prepare("UPDATE cat SET love=?").bind(NOW - sulkGrace + 1).run();
+  expect((await act(session, "meow")).status).toBe(200);
+});
+
+test("Ende der Schutzfrist: genau am Ende schmollt Byte, Miauen wird abgelehnt", async () => {
+  const session = await ready();
+  await env.DB!.prepare("UPDATE cat SET love=?").bind(NOW - sulkGrace).run();
+  const res = await act(session, "meow");
+  expect(res.status).toBe(409);
+  expect((await json(res)).error).toBe("Byte schmollt und antwortet nicht.");
 });

@@ -55,7 +55,9 @@ test("abgelehnte Aktionen schreiben keine Zeile (Cooldown, gemeinsame Pause, tot
   // Spielraum: Die vorbereitete Katze hat rund 51,8 h Futter, dazu kommen 9 h aus der Fütterung;
   // bei T0 + 72 h ist sie also tot.
   setTime(T0 + LIFETIME); // Byte ist tot
-  expect((await act(session, "meow")).status).toBe(409);
+  const dead = await act(session, "meow");
+  expect(dead.status).toBe(409);
+  expect((await json(dead)).error).toBe("Byte ist gestorben. Beteilige dich an der gemeinsamen Futterrunde.");
   expect(await rows()).toHaveLength(1);
 });
 

@@ -45,6 +45,7 @@ test("Streicheln hebt die Zuneigung um 12,5 Prozentpunkte (84 -> 97 %), die Sät
   expect(body.love).toBe(Math.ceil((love - START) / unit));
   expect(body.love).toBe(97); // 84 + 12,5 = 96,5, aufgerundet
   expect(body.me.points).toBe(effectivePoints("love", rules.love.points, "happy")); // Startzuneigung 84 %: Bonus
+  expect(body.me.points).toBe(6);
   expect(body.foodExpires).toBe(START_FOOD);
 });
 

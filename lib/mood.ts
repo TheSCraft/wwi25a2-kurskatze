@@ -27,6 +27,7 @@ export function effectivePoints(action: string, points: number, level: Mood): nu
   return points;
 }
 
+// Die 0.5 hier (halbe Futterwirkung) ist unabhängig von `hungerExtra` (das ist der zusätzliche HUNGER-Faktor).
 export function foodFactor(level: Mood): number {
   return level === "sulking" ? 0.5 : 1;
 }
