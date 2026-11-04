@@ -30,6 +30,14 @@ Der Dev-Server legt die Tabellen nicht selbst an. Solange die Migrationen fehlen
 
    `<hash>` ist der Dateiname der vorhandenen `.sqlite`-Datei (nicht `metadata.sqlite`).
 
+Die Schleife über alle `drizzle/000*.sql` gilt nur für eine **leere** Datenbank. Bei einer
+**bestehenden** lokalen Datenbank wird nach einem Update nur die neue Migration eingespielt, zum
+Beispiel:
+
+    sed 's/--> statement-breakpoint//' drizzle/0005_glorious_nighthawk.sql | sqlite3 <.sqlite-Datei>
+
+Ohne diese Migration antwortet `GET /api/cat` mit 500 und `no such table: events`.
+
 Löschen von `.wrangler/` setzt die lokale Datenbank zurück, dann ist dieser Schritt zu wiederholen.
 
 ## Tests

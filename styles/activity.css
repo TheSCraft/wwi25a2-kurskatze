@@ -1,0 +1,31 @@
+/* Karte „Letzte Ereignisse“ im Katzenzimmer. */
+.activity ol {
+  padding:0;
+  margin:0;
+  list-style:none
+}
+
+.activity li {
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px dashed #aaa;
+  font-size:14px
+}
+
+.activity li:last-child {
+  border-bottom:0
+}
+
+.activity time {
+  color:#827253;
+  font-size:12px;
+  white-space:nowrap
+}
+
+.activity p {
+  margin:0;
+  color:#5a564d;
+  font-size:14px
+}

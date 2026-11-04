@@ -11,6 +11,7 @@ import {ActionPanel} from "../components/cat/ActionPanel";
 import {RevivalPanel} from "../components/cat/RevivalPanel";
 import {StatusCard} from "../components/cat/StatusCard";
 import {ScoreCard} from "../components/cat/ScoreCard";
+import {ActivityCard} from "../components/cat/ActivityCard";
 import {Leaderboard} from "../components/cat/Leaderboard";
 import {Stickerbox} from "../components/stickerbox";
 import {AccountDialog,type DialogMode} from "../components/cat/AccountDialog";
@@ -65,7 +66,8 @@ export default function Page(){
 {dead&&data?<RevivalPanel data={data} busy={busy} onRevive={()=>run("revive",{round:data.foodExpires})} onLogin={()=>openDialog()}/>:<ActionPanel data={data} now={now} busy={busy} onAction={a=>run(a)} onLogin={()=>openDialog()}/>}
 </div></section>
 <aside><StatusCard data={data} now={now}/>
-<ScoreCard points={data?.me?.points||0} onBoard={()=>navigate("Rangliste")}/></aside></div>:null}
+<ScoreCard points={data?.me?.points||0} onBoard={()=>navigate("Rangliste")}/>
+<ActivityCard events={data?.events||[]} now={now}/></aside></div>:null}
 {tab==="Rangliste"&&<Leaderboard data={data} onRoom={()=>navigate("Katzenzimmer")}/>}
 {tab!=="Rangliste"&&<Stickerbox expanded={tab==="Stickerbox"} open={()=>navigate("Stickerbox")}/>}
 <footer><span>Miau Campus · WWI25A2</span><span>Mit Pfoten programmiert.</span></footer></main>
