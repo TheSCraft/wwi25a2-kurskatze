@@ -11,15 +11,16 @@
   cursor:default
 }
 
-.play {
+/* Nur die Aktionsknöpfe einfärben; das Katzenbild trägt dieselben Klassen (cat play usw.) */
+.actions .play {
   background:#b7dbbc
 }
 
-.brush {
+.actions .brush {
   background:#a9d7e3
 }
 
-.study {
+.actions .study {
   background:#f4d789
 }
 
