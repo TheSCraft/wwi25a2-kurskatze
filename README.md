@@ -50,6 +50,12 @@ wie die vorherigen einzeln und **der Reihe nach** eingespielt. `0008` füllt den
 `no such table: goals_reached` bzw. `no such column`. Beim späteren Einrichten eines Hostings
 müssen die Migrationen `0000` bis `0008` der Reihe nach laufen.
 
+Mit „Zuneigung mit Folgen“ kommt eine weitere Migration, `drizzle/0009_big_wendigo.sql`. Auf eine
+**bestehende** lokale Datenbank wird sie wie die vorherigen einzeln und **der Reihe nach**
+eingespielt; sie fügt die Spalte `cat.settled` hinzu. Ohne sie antwortet `GET /api/cat` mit 500
+und `no such column`. Beim späteren Einrichten eines Hostings müssen die Migrationen `0000` bis
+`0009` der Reihe nach laufen.
+
 Löschen von `.wrangler/` setzt die lokale Datenbank zurück, dann ist dieser Schritt zu wiederholen.
 
 ## Tests
