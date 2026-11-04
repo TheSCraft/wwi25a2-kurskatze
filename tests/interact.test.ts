@@ -92,3 +92,14 @@ test("nach Ablauf der Lebensfrist ist Byte tot und Aktionen ergeben 409", async 
     "Byte ist gestorben. Beteilige dich an der gemeinsamen Futterrunde.",
   );
 });
+
+test("nach Ablauf des Cooldowns wird dieselbe Aktion wieder angenommen", async () => {
+  const session = await ready();
+  expect((await act(session, "food")).status).toBe(200);
+  setTime(T0 + 6 * SECOND + 179 * SECOND);
+  expect((await act(session, "food")).status).toBe(429);
+  setTime(T0 + 6 * SECOND + 180 * SECOND); // Cooldown für food: 180 s
+  const again = await act(session, "food");
+  expect(again.status).toBe(200);
+  expect((await json(again)).me.points).toBe(10);
+});

@@ -1,6 +1,10 @@
 import { expect, test } from "vitest";
 import { T0, act, get, json, register, setTime } from "./helpers";
 
+// Prüft die Invariante "nur eine von zwei Aktionen im selben Moment wird angenommen, die
+// Punkte werden genau einmal vergeben" (gemeinsame Pause von 5 s, ein einziger D1-Batch).
+// Echte Parallelität beweist der Test nicht: Die Laufzeit kann die beiden Anfragen
+// nacheinander abarbeiten, dann deckt er dieselbe Logik ab wie ein sequenzieller Ablauf.
 test("zwei gleichzeitige Aktionen im selben Moment: nur eine wird angenommen", async () => {
   setTime(T0);
   const a = await register("Lisa");

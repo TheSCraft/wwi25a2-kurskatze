@@ -83,3 +83,54 @@ test("falscher Content-Type und Cross-Site-Anfragen werden abgelehnt", async () 
   const cross = await post({ action: "food" }, undefined, { "sec-fetch-site": "cross-site" });
   expect(cross.status).toBe(403);
 });
+
+const LOGIN_WINDOW = 5 * 60 * 1000;
+
+async function wrongLogins(count: number) {
+  const statuses: number[] = [];
+  for (let i = 0; i < count; i++) {
+    statuses.push((await post({ action: "login", name: "Lisa", password: "falsch" })).status);
+  }
+  return statuses;
+}
+
+test("nach Ablauf der fünf Minuten ist ein neuer Login-Versuch erlaubt", async () => {
+  setTime(T0);
+  await register("Lisa");
+  expect(await wrongLogins(12)).toEqual(Array(12).fill(401));
+  expect(await wrongLogins(1)).toEqual([429]);
+  setTime(T0 + LOGIN_WINDOW - 1000);
+  expect(await wrongLogins(1)).toEqual([429]);
+  setTime(T0 + LOGIN_WINDOW + 1000);
+  expect(await wrongLogins(1)).toEqual([401]);
+});
+
+test("ein erfolgreicher Login setzt den Fehlversuchszähler zurück", async () => {
+  setTime(T0);
+  await register("Lisa", "geheim1234");
+  expect(await wrongLogins(11)).toEqual(Array(11).fill(401));
+  // Der zwölfte Versuch zählt mit, ist aber richtig und löscht den Zähler.
+  const good = await post({ action: "login", name: "Lisa", password: "geheim1234" });
+  expect(good.status).toBe(200);
+  expect(await wrongLogins(12)).toEqual(Array(12).fill(401));
+  expect(await wrongLogins(1)).toEqual([429]);
+}, 20_000);
+
+test("nach dem Umbenennen gilt der alte Spitzname nicht mehr für den Login", async () => {
+  setTime(T0);
+  const { session } = await register("Lisa", "geheim1234");
+  expect((await post({ action: "rename", name: "Lisbeth" }, session)).status).toBe(200);
+  const old = await post({ action: "login", name: "Lisa", password: "geheim1234" });
+  expect(old.status).toBe(401);
+  const renamed = await post({ action: "login", name: "lisbeth", password: "geheim1234" });
+  expect(renamed.status).toBe(200);
+});
+
+test("Umbenennen auf einen leeren oder zu langen Namen ergibt 400", async () => {
+  setTime(T0);
+  const { session } = await register("Lisa");
+  expect((await post({ action: "rename", name: "   " }, session)).status).toBe(400);
+  expect((await post({ action: "rename", name: "" }, session)).status).toBe(400);
+  expect((await post({ action: "rename", name: "x".repeat(23) }, session)).status).toBe(400);
+  expect((await post({ action: "rename", name: "x".repeat(22) }, session)).status).toBe(200);
+});
