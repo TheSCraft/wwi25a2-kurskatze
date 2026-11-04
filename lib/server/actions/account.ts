@@ -19,7 +19,7 @@ export async function handleCredentials(req:Request, body:Body, who:Identity, no
    if(who.account)return response({error:"Du bist bereits angemeldet."},409);
    if(password.length<8)return response({error:"Nutze mindestens 8 Zeichen für dein Passwort."},400);
    const salt=secret(),stored=salt+":"+await passwordHash(password,salt);id=crypto.randomUUID();
-   try{await db().batch([sql("INSERT INTO accounts(player,key,password,joined) SELECT ?,?,?,CASE WHEN food_expires<=? AND NOT EXISTS(SELECT 1 FROM accounts WHERE "+roster+") THEN food_expires ELSE ? END FROM cat WHERE id=1",id,key,stored,now,now),sql("INSERT INTO players(id,name,points,last) VALUES(?,?,0,0)",id,name),sql("INSERT INTO sessions VALUES(?,?,?)",sessionHash,id,now+month)])}
+   try{await db().batch([sql("INSERT INTO accounts(player,key,password,joined) SELECT ?,?,?,CASE WHEN food_expires<=? AND NOT EXISTS(SELECT 1 FROM accounts WHERE "+roster+") THEN food_expires ELSE ? END FROM cat WHERE id=1",id,key,stored,now,now),sql("INSERT INTO players(id,name,points,last) VALUES(?,?,0,0)",id,name),sql("INSERT OR IGNORE INTO events(key,type,player,at) VALUES(?,?,?,?)","joined:"+id,"joined",id,now),sql("INSERT INTO sessions VALUES(?,?,?)",sessionHash,id,now+month)])}
    catch(e){if(String(e).includes("UNIQUE"))return response({error:"Dieser Spitzname ist schon vergeben."},409);throw e}
   }else{
    const bucket=await digest((req.headers.get("cf-connecting-ip")||"local")+"|"+key);
