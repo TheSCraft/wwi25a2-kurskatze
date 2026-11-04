@@ -20,6 +20,11 @@ test("weekStart: Grenze Sonntag 23:59:59 gegen Montag 00:00:00 (Berlin)", () => 
   expect(weekStart(t("2026-11-01T23:00:00Z"))).toBe(t("2026-11-01T23:00:00Z"));
 });
 
+test("weekStart: Jahreswechsel (Freitag 01.01.2027)", () => {
+  expect(weekStart(t("2027-01-01T12:00:00Z"))).toBe(t("2026-12-27T23:00:00Z"));
+  expect(nextWeekStart(t("2027-01-01T12:00:00Z"))).toBe(t("2027-01-03T23:00:00Z"));
+});
+
 test("weekStart: Woche mit Beginn der Sommerzeit (29.03.2026)", () => {
   expect(weekStart(t("2026-03-29T12:00:00Z"))).toBe(t("2026-03-22T23:00:00Z"));
   expect(weekStart(t("2026-03-29T00:30:00Z"))).toBe(t("2026-03-22T23:00:00Z"));

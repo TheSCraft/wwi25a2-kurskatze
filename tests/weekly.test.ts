@@ -1,7 +1,9 @@
 import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
 import { nextWeekStart, weekStart } from "../lib/week";
-import { T0, get, json, register, setTime } from "./helpers";
+import { weekBoardSql } from "../lib/server/state";
+import { rules } from "../lib/cat-rules";
+import { T0, act, get, json, register, setTime } from "./helpers";
 
 const WS = weekStart(T0);
 type Entry = { name: string; points: number };
@@ -110,4 +112,22 @@ test("nach dem Wochenwechsel startet die Wochenwertung bei null, die Gesamtwertu
   expect(after.weekBoard).toEqual([]);
   expect(after.weekStart).toBe(next);
   expect(after.board).toEqual([{ name: "Lisa", points: 5 }]);
+});
+
+test("die Wochenabfrage nutzt den Index auf at und nicht den auf player", async () => {
+  const plan = await env.DB!.prepare("EXPLAIN QUERY PLAN " + weekBoardSql).bind(0).all<{ detail: string }>();
+  const details = plan.results.map((r) => r.detail);
+  expect(details.some((d) => d.includes("actions_at_idx"))).toBe(true);
+  expect(details.some((d) => d.includes("actions_player_at_idx"))).toBe(false);
+});
+
+test("Aktion wirkt über das Protokoll bis in weekBoard und me", async () => {
+  setTime(T0);
+  const { session } = await register("Lisa");
+  await get(session);
+  setTime(T0 + 6000);
+  await act(session, "food");
+  const body = await json(await get(session));
+  expect(body.weekBoard).toEqual([{ name: "Lisa", points: rules.food.points }]);
+  expect(body.me.points).toBe(rules.food.points);
 });

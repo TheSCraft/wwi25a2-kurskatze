@@ -18,6 +18,6 @@ export function Leaderboard({data,now,onRoom}:Props){
  const empty=view==="week"?"Diese Woche hat noch niemand Punkte gesammelt. Wer gibt Byte den ersten Snack?":"Die Rangliste ist noch leer. Wer gibt Byte den ersten Snack?";
  return <section className="card board"><small><Trophy size={15}/> KURS-CHARTS</small><h2>Die Pfotenpunkte</h2>
   <div className="tabs" role="tablist" aria-label="Zeitraum" onKeyDown={onKeyDown}>{views.map(v=><button key={v.id} id={"tab-"+v.id} role="tab" type="button" aria-selected={view===v.id} aria-controls="board-panel" tabIndex={view===v.id?0:-1} onClick={()=>setView(v.id)}>{v.label}</button>)}</div>
-  <div id="board-panel" role="tabpanel" aria-labelledby={"tab-"+view}>{data&&<p>{intro}</p>}{list.length?<ol>{list.map((x,i)=><li key={i}><b>{String(i+1).padStart(2,"0")}</b><span>{x.name}</span><strong>{x.points} Pkt.</strong></li>)}</ol>:<p>{data?empty:"Rangliste lädt …"}</p>}</div>
+  <div id="board-panel" role="tabpanel" tabIndex={0} aria-labelledby={"tab-"+view}>{data&&<p>{intro}</p>}{list.length?<ol>{list.map((x,i)=><li key={i}><b>{String(i+1).padStart(2,"0")}</b><span>{x.name}</span><strong>{x.points} Pkt.</strong></li>)}</ol>:<p>{data?empty:"Rangliste lädt …"}</p>}</div>
   <button className="link" onClick={onRoom}>Ins Katzenzimmer <ArrowUpRight size={16}/></button></section>;
 }

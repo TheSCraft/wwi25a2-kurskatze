@@ -45,6 +45,8 @@ test("abgelehnte Aktionen schreiben keine Zeile (Cooldown, gemeinsame Pause, tot
   setTime(T0 + 20 * SECOND); // gleiche Aktion: Cooldown läuft noch
   expect((await act(session, "food")).status).toBe(429);
   expect(await rows()).toHaveLength(1);
+  // Spielraum: Die vorbereitete Katze hat rund 51,8 h Futter, dazu kommen 9 h aus der Fütterung;
+  // bei T0 + 72 h ist sie also tot.
   setTime(T0 + LIFETIME); // Byte ist tot
   expect((await act(session, "meow")).status).toBe(409);
   expect(await rows()).toHaveLength(1);

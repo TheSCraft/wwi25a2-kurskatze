@@ -82,7 +82,8 @@ Der Typ `Data` in `lib/cat-types.ts` wird um `weekBoard: Entry[]`, `weekStart: n
 
 Abfrage: `SELECT p.name AS name, sum(a.points) AS points FROM actions a JOIN players p ON
 p.id=a.player JOIN accounts ac ON ac.player=p.id WHERE ac.password IS NOT NULL AND a.at>=?
-GROUP BY a.player ORDER BY sum(a.points) DESC, max(a.at) ASC LIMIT 100` mit `weekStart(now)`.
+GROUP BY +a.player ORDER BY sum(a.points) DESC, max(a.at) ASC LIMIT 100` mit `weekStart(now)`.
+Das unäre Plus hält den Planer beim Index auf `at`, sonst durchsucht er die gesamte Historie.
 
 ## Oberfläche
 
@@ -130,6 +131,9 @@ Vitest über die echte Route (`tests/`), die Migration wird von `tests/setup.ts`
 - Datenmenge: Pro angenommener Aktion eine Zeile. Im Extremfall (Miauen alle 15 Minuten)
   etwa 100 Zeilen pro Konto und Tag, realistisch deutlich weniger; die Wochenabfrage liest
   nur Zeilen der laufenden Woche über den Index auf `at`.
+- Die Abfrage läuft bei jedem `state()`-Aufruf, und jeder Client fragt alle 8 Sekunden an. Bei einem
+  Hosting mit Abrechnung nach gelesenen Zeilen sollte man dann Caching oder einen vorberechneten
+  Wochenzähler erwägen.
 
 ## Risiken
 
