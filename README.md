@@ -43,6 +43,13 @@ eine **bestehende** lokale Datenbank wird sie wie die vorherige einzeln eingespi
 antwortet `GET /api/cat` mit 500 und `no such table: actions`. Beim späteren Einrichten eines
 Hostings müssen die Migrationen `0000` bis `0006` der Reihe nach laufen.
 
+Mit den Kurszielen kommen zwei weitere Migrationen, `drizzle/0007_hard_manta.sql` und
+`drizzle/0008_backfill_actions_counter.sql`. Auf eine **bestehende** lokale Datenbank werden sie
+wie die vorherigen einzeln und **der Reihe nach** eingespielt. `0008` füllt den neuen Zähler
+`cat.actions` aus dem Protokoll. Ohne sie antwortet `GET /api/cat` mit 500 und
+`no such table: goals_reached` bzw. `no such column`. Beim späteren Einrichten eines Hostings
+müssen die Migrationen `0000` bis `0008` der Reihe nach laufen.
+
 Löschen von `.wrangler/` setzt die lokale Datenbank zurück, dann ist dieser Schritt zu wiederholen.
 
 ## Tests
